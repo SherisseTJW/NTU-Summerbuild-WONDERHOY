@@ -7,11 +7,25 @@ beatmap::Beatmap beatmap::parseBeatmap(std::string path){
     std::string currentSection = "";
     std::map<std::string,std::string> attributes;
     beatmap::GeneralSection generalSection;
+    beatmap::MetadataSection metadataSection;
+    beatmap::DifficultySection difficultySection;
+    std::vector<beatmap::Event> events;
+
     while(std::getline(fileStream, line)){
+        std::cout << line << std::endl;
+        if(line.c_str()[0] == '/' && line.c_str()[1] == '/'){
+            continue;
+        }
         if(line.empty()){
             if(currentSection != ""){
                 if(currentSection == "General"){
                     generalSection.loadAttributes(attributes);
+                }
+                else if(currentSection == "Metadata"){
+                    metadataSection.loadAttributes(attributes);
+                }
+                else if(currentSection == "Difficulty"){
+                    difficultySection.loadAttributes(attributes);
                 }
                 currentSection = "";
                 attributes.clear();
@@ -22,14 +36,24 @@ beatmap::Beatmap beatmap::parseBeatmap(std::string path){
             if( sqbrac != std::string::npos){
                 currentSection = line.substr(sqbrac + 1, line.find("]") - sqbrac - 1);
             }
+            else if(currentSection == "Events"){
+                try{
+                    events.push_back(beatmap::Event::parseEvent(line));
+                }catch(beatmap::InvalidEventException e){
+                    continue;
+                }
+            }
             else if(!currentSection.empty()){
                 size_t separator = line.find(":");
-                std::string key = line.substr(0, separator);
-                std::string value = line.substr(separator+1);
-                if(value.c_str()[0] == ' '){
-                    value = value.substr(1);
+                if(separator != std::string::npos){
+                    std::string key = line.substr(0, separator);
+                    std::string value = line.substr(separator+1);
+                    if(value.c_str()[0] == ' '){
+                        value = value.substr(1);
+                    }
+                    attributes[key] = value;
                 }
-                attributes[key] = value;
+                
             }
         }
     }
@@ -38,6 +62,7 @@ beatmap::Beatmap beatmap::parseBeatmap(std::string path){
 
 void beatmap::GeneralSection::loadAttributes(std::map<std::string, std::string> attrs) {
     for (const auto& pair : attrs) {
+        std::cout << pair.first << ": " << pair.second << std::endl;
         if (pair.first == "AudioFilename") {
             audioFilename = pair.second;
         }
@@ -97,6 +122,66 @@ void beatmap::GeneralSection::loadAttributes(std::map<std::string, std::string> 
         }
         else if (pair.first == "SamplesMatchPlaybackRate") {
             samplesMatchPlaybackRate = (pair.second == "1");
+        }
+    }
+}
+
+void beatmap::MetadataSection::loadAttributes(std::map<std::string, std::string> attrs) {
+    for (const auto& pair : attrs) {
+        std::cout << pair.first << ": " << pair.second << std::endl;
+        if (pair.first == "Title") {
+            title = pair.second;
+        }
+        else if (pair.first == "TitleUnicode") {
+            titleUnicode = pair.second;
+        }
+        else if (pair.first == "Artist") {
+            artist = pair.second;
+        }
+        else if (pair.first == "ArtistUnicode") {
+            artistUnicode = pair.second; 
+        }
+        else if (pair.first == "Creator") {
+            creator = pair.second;
+        }
+        else if (pair.first == "Version") {
+            version = pair.second;
+        }
+        else if (pair.first == "Source") {
+            source = pair.second;
+        }
+        else if (pair.first == "Tags") {
+            tags = pair.second; 
+        }
+        else if (pair.first == "BeatmapID") {
+            beatmapID = std::stoi(pair.second);
+        }
+        else if (pair.first == "BeatmapSetID") {
+            beatmapSetID = std::stoi(pair.second);
+        }
+    }
+}
+
+void beatmap::DifficultySection::loadAttributes(std::map<std::string, std::string> attrs){
+    for (const auto& pair : attrs) {
+        std::cout << pair.first << ": " << pair.second << std::endl;
+        if (pair.first == "HpDrainRate") {
+            hpDrainRate = std::stod(pair.second);
+        }
+        else if (pair.first == "CircleSize") {
+            circleSize = std::stod(pair.second);
+        }
+        else if (pair.first == "OverallDifficulty") {
+            overallDifficulty = std::stod(pair.second);
+        }
+        else if (pair.first == "ApproachRate") {
+            approachRate = std::stod(pair.second);
+        }
+        else if (pair.first == "SliderMultiplier") {
+            sliderMultiplier = std::stod(pair.second);
+        }
+        else if (pair.first == "SliderTickRate") {
+            sliderTickRate = std::stod(pair.second);
         }
     }
 }

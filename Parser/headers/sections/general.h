@@ -1,3 +1,6 @@
+#ifndef GENERALSECTION_H
+#define GENERALSECTION_H
+
 #include "../section.h"
 
 namespace beatmap{
@@ -39,3 +42,5 @@ namespace beatmap{
             void loadAttributes(std::map<std::string, std::string>);
     };
 }
+
+#endif
