@@ -13,3 +13,7 @@ std::vector<std::string> beatmap::split(const std::string& s, const std::string&
         }
         return res;
 } 
+
+bool beatmap::checkFlag(int type, int pos){
+        return type & pow(2,pos) != 0;
+}

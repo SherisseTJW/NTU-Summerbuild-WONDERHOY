@@ -8,8 +8,6 @@ namespace beatmap{
 
     inline std::pair<int,int> defaultStoryBoard = {640, 480};
     inline std::pair<int,int> wideStoryBoard = {854, 480};
-
-    std::vector<std::string> split(const std::string& s, const std::string& delimiter);
     
     enum SampleSet{
         BEATMAP_DEFAULT,
@@ -24,6 +22,16 @@ namespace beatmap{
         ALOW
     };
 
+    enum CurveType{
+        BEZIER,
+        CENTRIPETAL,
+        LINEAR,
+        PERFECT_CIRCLE
+    };
+
+    std::vector<std::string> split(const std::string& s, const std::string& delimiter);
+
+    bool checkFlag(int type, int pos);
 }
 
 #endif
