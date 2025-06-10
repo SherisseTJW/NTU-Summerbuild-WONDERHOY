@@ -10,9 +10,8 @@ beatmap::Beatmap beatmap::parseBeatmap(std::string path){
     beatmap::MetadataSection metadataSection;
     beatmap::DifficultySection difficultySection;
     std::vector<beatmap::Event> events;
-
+    std::vector<beatmap::TimingPoints> timings;
     while(std::getline(fileStream, line)){
-        std::cout << line << std::endl;
         if(line.c_str()[0] == '/' && line.c_str()[1] == '/'){
             continue;
         }
@@ -42,6 +41,11 @@ beatmap::Beatmap beatmap::parseBeatmap(std::string path){
                 }catch(beatmap::InvalidEventException e){
                     continue;
                 }
+            }
+            else if(currentSection == "TimingPoints"){
+                std::cout << line << std::endl;
+                beatmap::TimingPoints timing =  beatmap::TimingPoints(line);
+                timings.push_back(timing);
             }
             else if(!currentSection.empty()){
                 size_t separator = line.find(":");

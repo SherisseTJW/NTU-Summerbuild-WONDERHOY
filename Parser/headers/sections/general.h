@@ -2,20 +2,9 @@
 #define GENERALSECTION_H
 
 #include "../section.h"
+#include "../util.h"
 
 namespace beatmap{
-
-    enum SampleSet{
-        NORMAL,
-        SOFT,
-        DRUM
-    };
-
-    enum OverlayPosition{
-        NOCHANGE,
-        BELOW,
-        ALOW
-    };
 
     class GeneralSection : public beatmap::Section {
         std::string audioFilename = "";

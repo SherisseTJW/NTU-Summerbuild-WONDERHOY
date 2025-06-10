@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include "util.h"
 
 namespace beatmap{
-    std::vector<std::string> split(const std::string& s, const std::string& delimiter);
 
     class InvalidEventException : public std::exception {
         private:

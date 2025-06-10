@@ -1,5 +1,5 @@
-#ifndef SECTION_H
-#define SECTION_H
+#ifndef BEATMAPSECTION_H
+#define BEATMAPSECTION_H
 
 #include <map>
 #include <string>

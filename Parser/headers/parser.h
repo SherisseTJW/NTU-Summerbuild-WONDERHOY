@@ -1,5 +1,5 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef BEATMAPPARSER_H
+#define BEATMAPPARSER_H
 
 #include <fstream>
 #include <iostream>
@@ -10,11 +10,9 @@
 #include "sections/metadata.h"
 #include "sections/diffculty.h"
 #include "event.h"
+#include "timing.h"
 
 namespace beatmap{
-
-    inline std::pair<int,int> defaultStoryBoard = {640, 480};
-    inline std::pair<int,int> wideStoryBoard = {854, 480};
 
     class Beatmap{
         beatmap::GeneralSection generalSection;
