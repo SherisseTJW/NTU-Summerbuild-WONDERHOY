@@ -11,13 +11,18 @@ AHitObject::AHitObject()
 	PrimaryActorTick.bCanEverTick = false;
 
 	UStaticMeshComponent* Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube.Cube"));
+	RootComponent = Mesh;
 
-	if (CubeMesh.Succeeded())
-	{
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube.Cube"));
+	if (CubeMesh.Succeeded()) {
+		UE_LOG(LogTemp, Warning, TEXT("Successfully set"));
 		Mesh->SetStaticMesh(CubeMesh.Object);
 	}
-	RootComponent = Mesh;
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Did not succeed"));
+	}
+
+	beatComponent = CreateDefaultSubobject<UBeatComponent>(TEXT("beatComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -25,9 +30,11 @@ void AHitObject::BeginPlay()
 {
 	Super::BeginPlay();
 
-	beatComponent = CreateDefaultSubobject<UBeatComponent>(TEXT("BeatComponent"));
-	beatComponent->Initialize(2.0f, 4.0f, 2.0f, 2.0f);
-	AddOwnedComponent(beatComponent);
+	UE_LOG(LogTemp, Warning, TEXT("Spawned"));
+
+	//if (beatComponent) {
+		//beatComponent->Initialize(0.0f, 20.0f, 2.0f, 2.0f);
+	//}
 }
 
 // Called every frame

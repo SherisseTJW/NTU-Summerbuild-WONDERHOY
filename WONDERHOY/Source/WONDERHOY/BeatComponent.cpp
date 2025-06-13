@@ -29,19 +29,6 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// Only when between StartTime and EndTime, appear
-	float CurrentTime = GetWorld()->GetTimeSeconds();
-	bool Visible = CurrentTime >= this->StartTime && CurrentTime <= this->EndTime;
-	bool AfterVisiblePeriod = CurrentTime > this->EndTime;
-
-	if (AActor* Owner = GetOwner()) {
-		if (AfterVisiblePeriod) {
-			Owner->Destroy();
-		}
-		else {
-			Owner->SetActorHiddenInGame(Visible);
-		}
-	}
 }
 
 void UBeatComponent::Initialize(float StartTimeArg, float EndTimeArg, float CoordXArg, float CoordYArg)
