@@ -15,14 +15,13 @@ AHitObject::AHitObject()
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube.Cube"));
 	if (CubeMesh.Succeeded()) {
-		UE_LOG(LogTemp, Warning, TEXT("Successfully set"));
 		Mesh->SetStaticMesh(CubeMesh.Object);
-	}
-	else {
-		UE_LOG(LogTemp, Warning, TEXT("Did not succeed"));
 	}
 
 	beatComponent = CreateDefaultSubobject<UBeatComponent>(TEXT("beatComponent"));
+	if (!beatComponent) {
+		UE_LOG(LogTemp, Warning, TEXT("BeatComponent not created successfully"));
+	}
 }
 
 // Called when the game starts or when spawned
@@ -32,9 +31,9 @@ void AHitObject::BeginPlay()
 
 	UE_LOG(LogTemp, Warning, TEXT("Spawned"));
 
-	//if (beatComponent) {
-		//beatComponent->Initialize(0.0f, 20.0f, 2.0f, 2.0f);
-	//}
+	if (beatComponent) {
+		beatComponent->Initialize(0.0f, 5.0f, 2.0f, 2.0f);
+	}
 }
 
 // Called every frame

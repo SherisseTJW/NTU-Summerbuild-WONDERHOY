@@ -2,6 +2,7 @@
 
 
 #include "BeatComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UBeatComponent::UBeatComponent()
@@ -29,6 +30,23 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	AActor* Owner = GetOwner();
+	if (!Owner) {
+		UE_LOG(LogTemp, Error, TEXT("BeatComponent does not have an Owner"));
+		return;
+	}
+
+	float CurrentRunTime = UGameplayStatics::GetRealTimeSeconds(GetWorld());
+
+	bool bPastPeriod = CurrentRunTime > this->EndTime;
+
+	if (bPastPeriod) {
+		Owner->Destroy();
+		return;
+	}
+
+	bool bVisible = !(CurrentRunTime >= this->StartTime && CurrentRunTime <= this->EndTime);
+	Owner->SetActorHiddenInGame(bVisible);
 }
 
 void UBeatComponent::Initialize(float StartTimeArg, float EndTimeArg, float CoordXArg, float CoordYArg)

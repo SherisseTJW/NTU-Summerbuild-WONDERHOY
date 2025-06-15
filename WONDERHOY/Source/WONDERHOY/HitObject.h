@@ -24,8 +24,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-private:
-	UPROPERTY();
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components");
 	UBeatComponent* beatComponent;
 };
 
