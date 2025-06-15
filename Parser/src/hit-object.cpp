@@ -10,7 +10,8 @@ beatmap::HitObject beatmap::HitObject::parseHitObjects(std::string line){
             std::stoi(params[0]),
             std::stoi(params[1]),
             std::stoi(params[2]),
-            std::stoi(params[4])
+            std::stoi(params[4]),
+            beatmap::HIT_CIRCLE
         );
         return object;
     }
@@ -66,13 +67,13 @@ beatmap::HitObject beatmap::HitObject::parseHitObjects(std::string line){
     }
 }
 
-beatmap::Slider::Slider(int _x, int _y, int _time, int _hitSound, beatmap::CurveType _curveType, std::vector<beatmap::Coord> _anchorPoints, int _slides, double _length) : beatmap::HitObject(_x, _y, _time, _hitSound){
+beatmap::Slider::Slider(int _x, int _y, int _time, int _hitSound, beatmap::CurveType _curveType, std::vector<beatmap::Coord> _anchorPoints, int _slides, double _length) : beatmap::HitObject(_x, _y, _time, _hitSound, beatmap::SLIDER){
     this->curveType = _curveType;
     this->anchorPoints = _anchorPoints;
     this->slides = _slides;
     this->length = _length;
 }
 
-beatmap::Spinning::Spinning(int _x, int _y, int _time, int _hitSound, int _endTime) : beatmap::HitObject(_x, _y, _time, _hitSound){
+beatmap::Spinning::Spinning(int _x, int _y, int _time, int _hitSound, int _endTime) : beatmap::HitObject(_x, _y, _time, _hitSound, beatmap::SPINNER){
     this->endTime = _endTime;
 }

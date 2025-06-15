@@ -39,6 +39,12 @@ namespace beatmap{
             }
     };
 
+    enum ObjectType{
+        HIT_CIRCLE,
+        SLIDER,
+        SPINNER
+    };
+
     class Coord{
         int x;
         int y;
@@ -60,16 +66,23 @@ namespace beatmap{
         int y;
         int time;
         int hitSound;
-        
+        beatmap::ObjectType type;
+
         public:
-            HitObject(int _x, int _y, int _time, int _hitSound):
+            HitObject(int _x, int _y, int _time, int _hitSound, beatmap::ObjectType _type):
                 x(_x),
                 y(_y),
                 time(_time),
-                hitSound(_hitSound)
+                hitSound(_hitSound),
+                type(_type)
                 {}
 
             static beatmap::HitObject parseHitObjects(std::string line);
+
+            beatmap::Coord getCoords(){
+                beatmap::Coord coord = beatmap::Coord(x, y);
+                return coord; 
+            }
     };
 
     class Slider : public HitObject{

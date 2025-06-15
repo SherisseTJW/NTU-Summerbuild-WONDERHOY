@@ -38,7 +38,11 @@ namespace beatmap{
                 timingPoints(_timingPoints),
                 hitObjects(_hitObjects)
             {}
-
+            
+            std::vector<beatmap::HitObject> getHitObjects(){
+                return this->hitObjects;
+            }
+            
             
     };
 
