@@ -7,21 +7,86 @@
 
 namespace beatmap{
 
+    class InvalidCurveTypeException : public std::exception {
+        private:
+            std::string message;
+        public:
+
+            // Constructor accepting const char*
+            InvalidCurveTypeException(const char* msg) :
+            message(msg) {}
+
+            // Override what() method, marked
+            // noexcept for modern C++
+            const char* what() const noexcept {
+                return message.c_str();
+            }
+    };
+
+    class InvalidObjectTypeException : public std::exception {
+        private:
+            std::string message;
+        public:
+
+            // Constructor accepting const char*
+            InvalidObjectTypeException(const char* msg) :
+            message(msg) {}
+
+            // Override what() method, marked
+            // noexcept for modern C++
+            const char* what() const noexcept {
+                return message.c_str();
+            }
+    };
+
+    enum ObjectType{
+        HIT_CIRCLE,
+        SLIDER,
+        SPINNER
+    };
+
+    class Coord{
+        int x;
+        int y;
+
+        public:
+            Coord(int _x, int _y): x(_x), y(_y){}
+            
+            int getX(){
+                return this->x;
+            }
+
+            int getY(){
+                return this->y;
+            }
+    };
+
     class HitObject{
         int x;
         int y;
         int time;
         int hitSound;
+        beatmap::ObjectType type;
 
         public:
-            HitObject(int _x, int _y, int _time, int _hitSound):
+            HitObject(int _x, int _y, int _time, int _hitSound, beatmap::ObjectType _type):
                 x(_x),
                 y(_y),
                 time(_time),
-                hitSound(_hitSound)
+                hitSound(_hitSound),
+                type(_type)
                 {}
 
             static beatmap::HitObject parseHitObjects(std::string line);
+
+            beatmap::Coord getCoords(){
+                beatmap::Coord coord = beatmap::Coord(x, y);
+                return coord; 
+            }
+
+            beatmap::ObjectType getType(){
+                return this->type;
+            }
     };
 
     class Slider : public HitObject{
@@ -39,22 +104,6 @@ namespace beatmap{
 
         public:
             Spinning(int _x, int _y, int _time, int _hitSound, int _endTime);
-    };
-
-    class Coord{
-        int x;
-        int y;
-
-        public:
-            Coord(int _x, int _y): x(_x), y(_y){}
-            
-            int getX(){
-                return this->x;
-            }
-
-            int getY(){
-                return this->y;
-            }
     };
 
 }

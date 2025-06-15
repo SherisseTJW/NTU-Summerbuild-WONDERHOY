@@ -29,6 +29,25 @@ namespace beatmap{
 
         public:
             void loadAttributes(std::map<std::string, std::string>);
+
+            std::string getAudioFilename(){
+                return this->audioFilename;
+            }
+
+            int getAudioLeadIn(){
+                return this->audioLeadin;
+            }
+
+            int getPreviewTime(){
+                return this->previewTime;
+            }
+
+            std::pair<int,int> getMapResolution(){
+                if(this->wideScreenStoryboard){
+                    return beatmap::wideStoryBoard;
+                }
+                return beatmap::defaultStoryBoard;
+            }
     };
 }
 

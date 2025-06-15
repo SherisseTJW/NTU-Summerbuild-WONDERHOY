@@ -3,7 +3,6 @@
 beatmap::Beatmap beatmap::parseBeatmap(std::string path){
     std::string line;
     std::ifstream fileStream(path);
-    beatmap::Beatmap beatmap = Beatmap();
     std::string currentSection = "";
     std::map<std::string,std::string> attributes;
     beatmap::GeneralSection generalSection;
@@ -11,6 +10,7 @@ beatmap::Beatmap beatmap::parseBeatmap(std::string path){
     beatmap::DifficultySection difficultySection;
     std::vector<beatmap::Event> events;
     std::vector<beatmap::TimingPoints> timings;
+    std::vector<beatmap::HitObject> hitObjects;
     while(std::getline(fileStream, line)){
         if(line.c_str()[0] == '/' && line.c_str()[1] == '/'){
             continue;
@@ -43,9 +43,13 @@ beatmap::Beatmap beatmap::parseBeatmap(std::string path){
                 }
             }
             else if(currentSection == "TimingPoints"){
-                std::cout << line << std::endl;
                 beatmap::TimingPoints timing =  beatmap::TimingPoints(line);
                 timings.push_back(timing);
+            }
+            else if(currentSection == "HitObjects"){
+                std::cout << line << std::endl;
+                beatmap::HitObject object =  beatmap::HitObject::parseHitObjects(line);
+                hitObjects.push_back(object);
             }
             else if(!currentSection.empty()){
                 size_t separator = line.find(":");
@@ -61,6 +65,7 @@ beatmap::Beatmap beatmap::parseBeatmap(std::string path){
             }
         }
     }
+    beatmap::Beatmap beatmap = Beatmap(generalSection, metadataSection, difficultySection, events, timings, hitObjects);
     return beatmap;
 }
 
