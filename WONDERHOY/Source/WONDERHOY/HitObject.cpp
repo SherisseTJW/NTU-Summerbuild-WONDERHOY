@@ -32,7 +32,7 @@ void AHitObject::BeginPlay()
 	UE_LOG(LogTemp, Warning, TEXT("Spawned"));
 
 	if (beatComponent) {
-		beatComponent->Initialize(0.0f, 5.0f, 2.0f, 2.0f);
+		beatComponent->Initialize(5.0f, 10.0f, 20.0f, 20.0f);
 	}
 }
 

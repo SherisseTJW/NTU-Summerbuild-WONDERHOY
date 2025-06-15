@@ -55,4 +55,15 @@ void UBeatComponent::Initialize(float StartTimeArg, float EndTimeArg, float Coor
 	this->EndTime = EndTimeArg;
 	this->CoordX = CoordXArg;
 	this->CoordY = CoordYArg;
+
+	AActor* Owner = GetOwner();
+
+	if (!Owner) {
+		UE_LOG(LogTemp, Error, TEXT("BeatComponent does not have an Owner"));
+		return;
+	}
+
+	// Transforming to 2D visuals
+	FVector SpawnLocation(CoordX, 0.0f, CoordY);
+	Owner->SetActorLocation(SpawnLocation);
 }
