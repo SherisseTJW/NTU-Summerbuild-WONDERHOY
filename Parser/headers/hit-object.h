@@ -83,6 +83,10 @@ namespace beatmap{
                 beatmap::Coord coord = beatmap::Coord(x, y);
                 return coord; 
             }
+
+            beatmap::ObjectType getType(){
+                return this->type;
+            }
     };
 
     class Slider : public HitObject{
