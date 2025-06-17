@@ -82,14 +82,17 @@ void UBeatComponent::SpawnHitObject() {
 	int32 ScreenCentreX = ScreenX / 2;
 	int32 ScreenCentreY = ScreenY / 2;
 
-	double ScreenPosX = 0;
-	double ScreenPosY = 0;
-	if (CoordX < ScreenCentreX) {
-		ScreenPosX = -(ScreenCentreX - CoordX);
-	}
+	UE_LOG(LogTemp, Warning, TEXT("Screen Size: %dx%d, Centre: (%d, %d)"), ScreenX, ScreenY, ScreenCentreX, ScreenCentreY);
 
-	if (CoordY < ScreenCentreY) {
-		ScreenPosY = -(ScreenCentreY - CoordY);
+	double ScreenPosX = 0;
+
+	// NOTE: OSU Maps - 512 x 384
+	// NOTE: Viewport - 1526 x 650
+	double ScreenCoordX = CoordX * 3;
+	double ScreenCoordY = CoordY * 3;
+
+	if (ScreenCoordX < ScreenCentreX) {
+		ScreenPosX = -(ScreenCentreX - ScreenCoordX);
 	}
 
 	FVector CameraLocation = PlayerController->PlayerCameraManager->GetCameraLocation();
@@ -98,7 +101,7 @@ void UBeatComponent::SpawnHitObject() {
 	FVector RightVector = CameraRotation.Quaternion().GetRightVector();
 	FVector UpVector = CameraRotation.Quaternion().GetUpVector();
 
-	FVector OffsetVector = RightVector * ScreenPosX + UpVector * CoordY;
+	FVector OffsetVector = RightVector * ScreenPosX + UpVector * ScreenCoordY;
 
 	FVector SpawnLocation = CameraLocation + CameraRotation.Vector() * 500.0f + OffsetVector;
 
