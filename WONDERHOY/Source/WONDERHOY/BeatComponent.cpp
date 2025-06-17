@@ -76,24 +76,29 @@ void UBeatComponent::SpawnHitObject() {
 		return;
 	}
 
-	int32 ScreenX, ScreenY;
-	PlayerController->GetViewportSize(ScreenX, ScreenY);
+	AActor* Owner = GetOwner();
 
-	int32 ScreenCentreX = ScreenX / 2;
-	int32 ScreenCentreY = ScreenY / 2;
-
-	UE_LOG(LogTemp, Warning, TEXT("Screen Size: %dx%d, Centre: (%d, %d)"), ScreenX, ScreenY, ScreenCentreX, ScreenCentreY);
-
-	double ScreenPosX = 0;
+	if (!Owner) {
+		UE_LOG(LogTemp, Error, TEXT("BeatComponent does not have an Owner"));
+		return;
+	}
 
 	// NOTE: OSU Maps - 512 x 384
 	// NOTE: Viewport - 1526 x 650
-	double ScreenCoordX = CoordX * 3;
-	double ScreenCoordY = CoordY * 3;
+	float OsuWidth = 512.0f; 
+	float OsuHeight = 384.0f;
 
-	if (ScreenCoordX < ScreenCentreX) {
-		ScreenPosX = -(ScreenCentreX - ScreenCoordX);
-	}
+	float NormalizedCoordX = CoordX - (OsuWidth / 2.0f);
+	float NormalizedCoordY = (OsuHeight / 2.0f) - CoordY;
+
+	float UnitScale = 1.5f;
+	int32 ScreenX, ScreenY;
+	PlayerController->GetViewportSize(ScreenX, ScreenY);
+
+	int32 Margin = 5;
+
+	float OffsetCoordX = NormalizedCoordX * ((ScreenX - Margin) / OsuWidth);
+	float OffsetCoordY = NormalizedCoordY * ((ScreenY - Margin) / OsuHeight);
 
 	FVector CameraLocation = PlayerController->PlayerCameraManager->GetCameraLocation();
 	FRotator CameraRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
@@ -101,16 +106,11 @@ void UBeatComponent::SpawnHitObject() {
 	FVector RightVector = CameraRotation.Quaternion().GetRightVector();
 	FVector UpVector = CameraRotation.Quaternion().GetUpVector();
 
-	FVector OffsetVector = RightVector * ScreenPosX + UpVector * ScreenCoordY;
+	FVector OffsetVector = (RightVector * OffsetCoordX) + (UpVector * OffsetCoordY);
 
-	FVector SpawnLocation = CameraLocation + CameraRotation.Vector() * 500.0f + OffsetVector;
+	FVector SpawnLocation = CameraLocation + (CameraRotation.Vector() * 500.0f) + OffsetVector;
 
-	AActor* Owner = GetOwner();
-
-	if (!Owner) {
-		UE_LOG(LogTemp, Error, TEXT("BeatComponent does not have an Owner"));
-		return;
-	}
+	UE_LOG(LogTemp, Warning, TEXT("Attempting to spawn at %s"), *SpawnLocation.ToString());
 
 	Owner->SetActorLocation(SpawnLocation);
 }
