@@ -28,8 +28,6 @@ AHitObject::AHitObject()
 void AHitObject::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UE_LOG(LogTemp, Warning, TEXT("Spawned"));
 }
 
 // Called every frame
@@ -41,8 +39,8 @@ void AHitObject::Tick(float DeltaTime)
 
 void AHitObject::Initialize(int TimeArg, int CoordXArg, int CoordYArg) {
 	if (beatComponent) {
-		float StartTime = TimeArg - 1.0f;
-		float EndTime = TimeArg + 1.0f;
+		int StartTime = TimeArg - OffsetTime;
+		int EndTime = TimeArg + OffsetTime;
 		beatComponent->Initialize(StartTime, EndTime, CoordXArg, CoordYArg);
 	}
 }

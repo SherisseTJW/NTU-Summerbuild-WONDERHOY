@@ -24,13 +24,15 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void Initialize(float StartTimeArg, float EndTimeArg, float CoordXArg, float CoordYArg);
+	void Initialize(int StartTimeArg, int EndTimeArg, float CoordXArg, float CoordYArg);
+
+	void SpawnHitObject();
 
 
 private:
 	// NOTE: Replace with the actual Beatmap::HitObject once parser merged
-	float StartTime;
-	float EndTime;
+	int StartTime;
+	int EndTime;
 
 	float CoordX;
 	float CoordY;

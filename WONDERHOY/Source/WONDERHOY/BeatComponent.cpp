@@ -45,16 +45,62 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		return;
 	}
 
-	//bool bVisible = !(CurrentRunTime >= this->StartTime && CurrentRunTime <= this->EndTime);
-	//Owner->SetActorHiddenInGame(bVisible);
+	float StartTimeInS = this->StartTime / 1000;
+	float EndTimeInS = this->EndTime / 1000;
+
+	bool bVisible = !(CurrentRunTime >= StartTimeInS && CurrentRunTime <= EndTimeInS);
+	Owner->SetActorHiddenInGame(bVisible);
 }
 
-void UBeatComponent::Initialize(float StartTimeArg, float EndTimeArg, float CoordXArg, float CoordYArg)
+void UBeatComponent::Initialize(int StartTimeArg, int EndTimeArg, float CoordXArg, float CoordYArg)
 {
 	this->StartTime = StartTimeArg;
 	this->EndTime = EndTimeArg;
 	this->CoordX = CoordXArg;
 	this->CoordY = CoordYArg;
+
+	UE_LOG(LogTemp, Warning, TEXT("BeatComponent initialized with StartTime: %d ms, EndTime: %d ms, CoordX: %f, CoordY: %f"), StartTimeArg, EndTimeArg, CoordXArg, CoordYArg);
+
+	SpawnHitObject();
+}
+
+void UBeatComponent::SpawnHitObject() {
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (!PlayerController) {
+		UE_LOG(LogTemp, Error, TEXT("No PlayerController found in the world"));
+		return;
+	}
+
+	if (!PlayerController->PlayerCameraManager) {
+		UE_LOG(LogTemp, Error, TEXT("PlayerController does not have a PlayerCameraManager"));
+		return;
+	}
+
+	int32 ScreenX, ScreenY;
+	PlayerController->GetViewportSize(ScreenX, ScreenY);
+
+	int32 ScreenCentreX = ScreenX / 2;
+	int32 ScreenCentreY = ScreenY / 2;
+
+	double ScreenPosX = 0;
+	double ScreenPosY = 0;
+	if (CoordX < ScreenCentreX) {
+		ScreenPosX = -(ScreenCentreX - CoordX);
+	}
+
+	if (CoordY < ScreenCentreY) {
+		ScreenPosY = -(ScreenCentreY - CoordY);
+	}
+
+	FVector CameraLocation = PlayerController->PlayerCameraManager->GetCameraLocation();
+	FRotator CameraRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
+
+	FVector RightVector = CameraRotation.Quaternion().GetRightVector();
+	FVector UpVector = CameraRotation.Quaternion().GetUpVector();
+
+	FVector OffsetVector = RightVector * ScreenPosX + UpVector * CoordY;
+
+	FVector SpawnLocation = CameraLocation + CameraRotation.Vector() * 500.0f + OffsetVector;
 
 	AActor* Owner = GetOwner();
 
@@ -63,9 +109,5 @@ void UBeatComponent::Initialize(float StartTimeArg, float EndTimeArg, float Coor
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("BeatComponent initialized with StartTime: %f, EndTime: %f, CoordX: %f, CoordY: %f"), StartTimeArg, EndTimeArg, CoordXArg, CoordYArg);
-
-	// Transforming to 2D visuals
-	FVector SpawnLocation(CoordX, 0.0f, CoordY);
 	Owner->SetActorLocation(SpawnLocation);
 }

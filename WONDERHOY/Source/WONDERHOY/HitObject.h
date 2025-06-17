@@ -29,5 +29,7 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components");
 	UBeatComponent* beatComponent;
+
+	int OffsetTime = 1000;
 };
 
