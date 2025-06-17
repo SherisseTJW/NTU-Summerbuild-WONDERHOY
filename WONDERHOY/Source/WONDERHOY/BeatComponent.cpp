@@ -45,8 +45,8 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		return;
 	}
 
-	bool bVisible = !(CurrentRunTime >= this->StartTime && CurrentRunTime <= this->EndTime);
-	Owner->SetActorHiddenInGame(bVisible);
+	//bool bVisible = !(CurrentRunTime >= this->StartTime && CurrentRunTime <= this->EndTime);
+	//Owner->SetActorHiddenInGame(bVisible);
 }
 
 void UBeatComponent::Initialize(float StartTimeArg, float EndTimeArg, float CoordXArg, float CoordYArg)
@@ -62,6 +62,8 @@ void UBeatComponent::Initialize(float StartTimeArg, float EndTimeArg, float Coor
 		UE_LOG(LogTemp, Error, TEXT("BeatComponent does not have an Owner"));
 		return;
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("BeatComponent initialized with StartTime: %f, EndTime: %f, CoordX: %f, CoordY: %f"), StartTimeArg, EndTimeArg, CoordXArg, CoordYArg);
 
 	// Transforming to 2D visuals
 	FVector SpawnLocation(CoordX, 0.0f, CoordY);

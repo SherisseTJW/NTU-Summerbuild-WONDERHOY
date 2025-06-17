@@ -30,10 +30,6 @@ void AHitObject::BeginPlay()
 	Super::BeginPlay();
 
 	UE_LOG(LogTemp, Warning, TEXT("Spawned"));
-
-	if (beatComponent) {
-		beatComponent->Initialize(5.0f, 10.0f, 20.0f, 20.0f);
-	}
 }
 
 // Called every frame
@@ -43,3 +39,10 @@ void AHitObject::Tick(float DeltaTime)
 
 }
 
+void AHitObject::Initialize(int TimeArg, int CoordXArg, int CoordYArg) {
+	if (beatComponent) {
+		float StartTime = TimeArg - 1.0f;
+		float EndTime = TimeArg + 1.0f;
+		beatComponent->Initialize(StartTime, EndTime, CoordXArg, CoordYArg);
+	}
+}
