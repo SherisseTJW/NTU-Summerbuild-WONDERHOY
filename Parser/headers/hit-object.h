@@ -45,6 +45,14 @@ namespace beatmap{
         SPINNER
     };
 
+    enum Judgement{
+        MISS,
+        BAD,
+        GOOD,
+        GREAT,
+        PERFECT
+    };
+
     class Coord{
         int x;
         int y;
@@ -87,6 +95,8 @@ namespace beatmap{
             beatmap::ObjectType getType(){
                 return this->type;
             }
+
+            beatmap::Judgement getJudgement(int time);
     };
 
     class Slider : public HitObject{

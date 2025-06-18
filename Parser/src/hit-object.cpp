@@ -77,3 +77,20 @@ beatmap::Slider::Slider(int _x, int _y, int _time, int _hitSound, beatmap::Curve
 beatmap::Spinning::Spinning(int _x, int _y, int _time, int _hitSound, int _endTime) : beatmap::HitObject(_x, _y, _time, _hitSound, beatmap::SPINNER){
     this->endTime = _endTime;
 }
+
+beatmap::Judgement beatmap::HitObject::getJudgement(int time){
+    int diff = abs(time - this->time);
+    if(diff < 42){
+        return beatmap::PERFECT;
+    }
+    else if(42 <= diff && diff < 83){
+        return beatmap::GREAT;
+    }
+    else if(83 <= diff && diff < 108){
+        return beatmap::GOOD;
+    }
+    else if(108 <= diff && diff < 125){
+        return beatmap::BAD;
+    }
+    return beatmap::MISS;
+}
