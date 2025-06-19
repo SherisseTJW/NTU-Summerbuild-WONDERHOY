@@ -103,7 +103,7 @@ namespace beatmap{
                 type(_type)
                 {}
 
-            static std::unique_ptr<beatmap::HitObject>  parseHitObjects(std::string& line);
+            static beatmap::HitObject*  parseHitObjects(std::string& line);
             
             int getTime(){
                 return this->time;
@@ -118,19 +118,19 @@ namespace beatmap{
                 return this->type;
             }
 
-            beatmap::HitObject::CurveType getCurveType(){
+            virtual beatmap::HitObject::CurveType getCurveType(){
                 throw beatmap::NotImplementedException("Not Implemented!");
             }
 
-            std::vector<beatmap::Coord> getAnchorPoints(){
+            virtual std::vector<beatmap::Coord> getAnchorPoints(){
                 throw beatmap::NotImplementedException("Not Implemented!");
             }
 
-            int getEndTime(){
+            virtual int getEndTime(){
                 throw beatmap::NotImplementedException("Not Implemented!");
             }
 
-            int getSlides(){
+            virtual int getSlides(){
                 throw beatmap::NotImplementedException("Not Implemented!");
             }
 
@@ -156,15 +156,15 @@ namespace beatmap{
         public:
             Slider(int _x, int _y, int _time, int _hitSound, beatmap::HitObject::CurveType _curveType, std::vector<beatmap::Coord> _anchorPoints, int _slides, double _length);
 
-        beatmap::HitObject::CurveType getCurveType(){
+        beatmap::HitObject::CurveType getCurveType() override {
             return this->curveType;
         } 
 
-        std::vector<beatmap::Coord> getAnchorPoints(){
+        std::vector<beatmap::Coord> getAnchorPoints() override {
             return this->anchorPoints;
         }
 
-        int getSlides(){
+        int getSlides() override {
             return this->slides;
         }
     };
