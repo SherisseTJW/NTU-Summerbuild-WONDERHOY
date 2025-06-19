@@ -69,7 +69,7 @@ namespace beatmap{
                 return this->judgements;
             }
             
-            beatmap::Judgement getJudgement(int time, beatmap::HitObject& hitObject, bool followed = false);
+            beatmap::HitObject::Judgement getJudgement(int time, beatmap::HitObject& hitObject, bool followed = false);
     };
 
     Beatmap parseBeatmap(std::string path);

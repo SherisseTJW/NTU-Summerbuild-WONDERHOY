@@ -194,16 +194,16 @@ void beatmap::DifficultySection::loadAttributes(std::map<std::string, std::strin
     }
 }
 
-beatmap::Judgement beatmap::Beatmap::getJudgement(int time, beatmap::HitObject& hitObject, bool followed){
-    beatmap::Judgement judgement;
-    if(hitObject.getType() == beatmap::SLIDER){
+beatmap::HitObject::Judgement beatmap::Beatmap::getJudgement(int time, beatmap::HitObject& hitObject, bool followed){
+    beatmap::HitObject::Judgement judgement;
+    if(hitObject.getType() == beatmap::HitObject::SLIDER){
         judgement = hitObject.setJudgement(time, followed);
     }
     judgement = hitObject.setJudgement(time);
     judgements[judgement]++;
     switch(judgement){
-        case beatmap::PERFECT:
-        case beatmap::GREAT:
+        case beatmap::HitObject::PERFECT:
+        case beatmap::HitObject::GREAT:
             currCombo += 1;
             if(maxCombo < currCombo){
                 maxCombo = currCombo;
