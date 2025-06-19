@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "BeatComponent.h"
+#include "Parser/headers/hit-object.h"
 #include "HitObject.generated.h"
 
 UCLASS()
@@ -24,7 +25,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Initialize(int TimeArg, int CoordXArg, int CoordYArg);
+	void Initialize(int TimeArg, int CoordXArg, int CoordYArg, beatmap::ObjectType ObjectTypeArg);
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components");

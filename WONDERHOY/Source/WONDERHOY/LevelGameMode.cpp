@@ -34,9 +34,10 @@ void ALevelGameMode::BeginPlay()
 
 	for (beatmap::HitObject curHitObject : HitObjects) {
 		int Time = curHitObject.getTime();
-		beatmap::Coord BeatMapCoords = curHitObject.getCoords();
+		beatmap::Coord BeatCoords = curHitObject.getCoords();
+		beatmap::ObjectType BeatType = curHitObject.getType();
 
 		AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
-		HitObjectActor->Initialize(Time, BeatMapCoords.getX(), BeatMapCoords.getY());
+		HitObjectActor->Initialize(Time, BeatCoords.getX(), BeatCoords.getY(), BeatType);
 	}
 }
