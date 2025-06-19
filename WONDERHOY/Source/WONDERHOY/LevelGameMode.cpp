@@ -33,11 +33,7 @@ void ALevelGameMode::BeginPlay()
 	UE_LOG(LogTemp, Warning, TEXT("BeatMap has %d HitObjects"), HitObjects.size());
 
 	for (beatmap::HitObject curHitObject : HitObjects) {
-		int Time = curHitObject.getTime();
-		beatmap::Coord BeatCoords = curHitObject.getCoords();
-		beatmap::ObjectType BeatType = curHitObject.getType();
-
 		AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
-		HitObjectActor->Initialize(Time, BeatCoords.getX(), BeatCoords.getY(), BeatType);
+		HitObjectActor->Initialize(curHitObject);
 	}
 }

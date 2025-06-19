@@ -25,12 +25,19 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Initialize(int TimeArg, int CoordXArg, int CoordYArg, beatmap::ObjectType ObjectTypeArg);
+	void Initialize(beatmap::HitObject HitObjectArg);
+	void RenderHitCircle();
+	void RenderSlider(beatmap::Slider SliderHitObject);
+	void RenderSpinner(beatmap::Spinning SpinnerHitObject);
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components");
 	UBeatComponent* beatComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* Mesh;
+
+	// In ms
 	int OffsetTime = 1000;
 };
 

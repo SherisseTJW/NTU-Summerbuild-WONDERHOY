@@ -11,14 +11,8 @@ AHitObject::AHitObject()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	UStaticMeshComponent* Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
-
-	/*
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube.Cube"));
-	if (CubeMesh.Succeeded()) {
-		Mesh->SetStaticMesh(CubeMesh.Object);
-	}*/
 
 	beatComponent = CreateDefaultSubobject<UBeatComponent>(TEXT("beatComponent"));
 	if (!beatComponent) {
@@ -39,36 +33,53 @@ void AHitObject::Tick(float DeltaTime)
 
 }
 
-void AHitObject::Initialize(int TimeArg, int CoordXArg, int CoordYArg, beatmap::ObjectType ObjectTypeArg) {
+void AHitObject::Initialize(beatmap::HitObject HitObjectArg) {
 	if (!beatComponent) {
 		UE_LOG(LogTemp, Warning, TEXT("Error Initializing HitObject.. BeatComponent not created successfully"));
 		return;
 	}
 
-	UStaticMeshComponent* Mesh = Cast<UStaticMeshComponent>(RootComponent);
-	if (!Mesh) return;
+	if (!Mesh) {
+		UE_LOG(LogTemp, Warning, TEXT("Error Initializing HitObject.. Null Mesh"));
+		return;
+	}
 
-	FString Path;
-	switch (ObjectTypeArg) {
+	int Time = HitObjectArg.getTime();
+	beatmap::Coord BeatCoords = HitObjectArg.getCoords();
+	beatmap::ObjectType BeatType = HitObjectArg.getType();
+
+	switch (BeatType) {
 		case beatmap::ObjectType::HIT_CIRCLE:
-			Path = TEXT("/Engine/BasicShapes/Cube.Cube");
+			RenderHitCircle();
 			break;
 		case beatmap::ObjectType::SLIDER:
-			Path = TEXT("/Engine/BasicShapes/Sphere.Sphere");
+			RenderSlider(HitObjectArg);
 			break;
 		case beatmap::ObjectType::SPINNER:
-			Path = TEXT("/Engine/BasicShapes/Cylinder.Cylinder");
+			RenderSpinner(HitObjectArg);
 			break;
 	}
 
-	if (!Path.IsEmpty()) {
-		UStaticMesh* LoadedMesh = LoadObject<UStaticMesh>(nullptr, *Path);
+	int StartTime = Time - OffsetTime;
+	int EndTime = Time + OffsetTime;
+	beatComponent->Initialize(StartTime, EndTime, BeatCoords.getX(), BeatCoords.getY());
+}
+
+void AHitObject::RenderHitCircle() {
+		UStaticMesh* LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
 		if (LoadedMesh) {
 			Mesh->SetStaticMesh(LoadedMesh);
 		}
-	}
-
-	int StartTime = TimeArg - OffsetTime;
-	int EndTime = TimeArg + OffsetTime;
-	beatComponent->Initialize(StartTime, EndTime, CoordXArg, CoordYArg);
+}
+void AHitObject::RenderSlider(beatmap::Slider SliderHitObject) {
+		UStaticMesh* LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
+		if (LoadedMesh) {
+			Mesh->SetStaticMesh(LoadedMesh);
+		}
+}
+void AHitObject::RenderSpinner(beatmap::Spinning SpinnerHitObject) {
+		UStaticMesh* LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
+		if (LoadedMesh) {
+			Mesh->SetStaticMesh(LoadedMesh);
+		}
 }
