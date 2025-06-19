@@ -1,12 +1,12 @@
 #include "../headers/hit-object.h"
 
-beatmap::HitObject beatmap::HitObject::parseHitObjects(std::string& line){
+std::unique_ptr<beatmap::HitObject> beatmap::HitObject::parseHitObjects(std::string& line){
     std::vector<std::string> params = beatmap::split(line, ",");
 
     int type = std::stoi(params[3]);
 
     if(beatmap::checkFlag(type, 0)){
-        beatmap::HitObject object = beatmap::HitObject(
+       std::unique_ptr<beatmap::HitObject> object =std::make_unique<beatmap::HitObject>(
             std::stoi(params[0]),
             std::stoi(params[1]),
             std::stoi(params[2]),
@@ -40,7 +40,7 @@ beatmap::HitObject beatmap::HitObject::parseHitObjects(std::string& line){
             beatmap::Coord coord = beatmap::Coord(std::stoi(xy[0]), std::stoi(xy[1]));
             anchorPoints.push_back(coord);
         }
-        beatmap::Slider slider = beatmap::Slider(
+        std::unique_ptr<beatmap::Slider> slider = std::make_unique<beatmap::Slider>(
             std::stoi(params[0]),
             std::stoi(params[1]),
             std::stoi(params[2]),
@@ -53,7 +53,7 @@ beatmap::HitObject beatmap::HitObject::parseHitObjects(std::string& line){
         return slider;
     }
     else if(beatmap::checkFlag(type,3)){
-        beatmap::Spinning object = beatmap::Spinning(
+        std::unique_ptr<beatmap::Spinning> object = std::make_unique<beatmap::Spinning>(
             std::stoi(params[0]),
             std::stoi(params[1]),
             std::stoi(params[2]),

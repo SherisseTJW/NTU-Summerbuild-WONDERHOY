@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include "util.h"
 
 namespace beatmap{
@@ -30,6 +31,22 @@ namespace beatmap{
 
             // Constructor accepting const char*
             InvalidObjectTypeException(const char* msg) :
+            message(msg) {}
+
+            // Override what() method, marked
+            // noexcept for modern C++
+            const char* what() const noexcept {
+                return message.c_str();
+            }
+    };
+
+    class NotImplementedException : public std::exception {
+        private:
+            std::string message;
+        public:
+
+            // Constructor accepting const char*
+            NotImplementedException(const char* msg) :
             message(msg) {}
 
             // Override what() method, marked
@@ -86,8 +103,8 @@ namespace beatmap{
                 type(_type)
                 {}
 
-            static beatmap::HitObject parseHitObjects(std::string& line);
-
+            static std::unique_ptr<beatmap::HitObject>  parseHitObjects(std::string& line);
+            
             int getTime(){
                 return this->time;
             }
@@ -101,10 +118,26 @@ namespace beatmap{
                 return this->type;
             }
 
+            beatmap::HitObject::CurveType getCurveType(){
+                throw beatmap::NotImplementedException("Not Implemented!");
+            }
+
+            std::vector<beatmap::Coord> getAnchorPoints(){
+                throw beatmap::NotImplementedException("Not Implemented!");
+            }
+
+            int getEndTime(){
+                throw beatmap::NotImplementedException("Not Implemented!");
+            }
+
+            int getSlides(){
+                throw beatmap::NotImplementedException("Not Implemented!");
+            }
+
             beatmap::HitObject::Judgement setJudgement(int time);
 
             beatmap::HitObject::Judgement setJudgement(int time, bool followed);
-            
+
         private:
             int x;
             int y;
@@ -131,7 +164,7 @@ namespace beatmap{
             return this->anchorPoints;
         }
 
-        int geSlides(){
+        int getSlides(){
             return this->slides;
         }
     };
@@ -141,6 +174,10 @@ namespace beatmap{
 
         public:
             Spinning(int _x, int _y, int _time, int _hitSound, int _endTime);
+        
+        int getEndTime(){
+            return this->endTime;
+        }
     };
 
 }
