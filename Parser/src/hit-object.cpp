@@ -1,6 +1,6 @@
 #include "../headers/hit-object.h"
 
-beatmap::HitObject beatmap::HitObject::parseHitObjects(std::string line){
+beatmap::HitObject beatmap::HitObject::parseHitObjects(std::string& line){
     std::vector<std::string> params = beatmap::split(line, ",");
 
     int type = std::stoi(params[3]);
@@ -78,7 +78,7 @@ beatmap::Spinning::Spinning(int _x, int _y, int _time, int _hitSound, int _endTi
     this->endTime = _endTime;
 }
 
-beatmap::Judgement beatmap::HitObject::getJudgement(int time){
+beatmap::Judgement beatmap::HitObject::setJudgement(int time){
     int diff = abs(time - this->time);
     if(diff < 42){
         return beatmap::PERFECT;
@@ -93,4 +93,23 @@ beatmap::Judgement beatmap::HitObject::getJudgement(int time){
         return beatmap::BAD;
     }
     return beatmap::MISS;
+}
+
+beatmap::Judgement beatmap::HitObject::setJudgement(int time, bool followed){
+    beatmap::Judgement judgement = setJudgement(time);
+    if(type == beatmap::SLIDER && !followed && judgement != beatmap::MISS){
+        switch(judgement){
+            case beatmap::PERFECT:
+                judgement = beatmap::GREAT;
+            case beatmap::GREAT:
+                judgement = beatmap::GOOD;
+                break;
+            case beatmap::GOOD:
+                judgement = beatmap::BAD;
+                break;
+            default:   
+                judgement = beatmap::MISS;
+        }
+    }
+    return judgement;
 }

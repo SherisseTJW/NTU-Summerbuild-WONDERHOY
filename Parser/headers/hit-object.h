@@ -75,7 +75,7 @@ namespace beatmap{
         int time;
         int hitSound;
         beatmap::ObjectType type;
-
+        
         public:
             HitObject(int _x, int _y, int _time, int _hitSound, beatmap::ObjectType _type):
                 x(_x),
@@ -85,7 +85,11 @@ namespace beatmap{
                 type(_type)
                 {}
 
-            static beatmap::HitObject parseHitObjects(std::string line);
+            static beatmap::HitObject parseHitObjects(std::string& line);
+
+            int getTime(){
+                return this->time;
+            }
 
             beatmap::Coord getCoords(){
                 beatmap::Coord coord = beatmap::Coord(x, y);
@@ -96,7 +100,9 @@ namespace beatmap{
                 return this->type;
             }
 
-            beatmap::Judgement getJudgement(int time);
+            beatmap::Judgement setJudgement(int time);
+
+            beatmap::Judgement setJudgement(int time, bool followed);
     };
 
     class Slider : public HitObject{
