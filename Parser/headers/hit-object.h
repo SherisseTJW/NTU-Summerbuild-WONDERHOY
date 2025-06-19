@@ -3,10 +3,11 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include "util.h"
 
 namespace beatmap{
-
+    
     class InvalidCurveTypeException : public std::exception {
         private:
             std::string message;
@@ -39,18 +40,20 @@ namespace beatmap{
             }
     };
 
-    enum ObjectType{
-        HIT_CIRCLE,
-        SLIDER,
-        SPINNER
-    };
+    class NotImplementedException : public std::exception {
+        private:
+            std::string message;
+        public:
 
-    enum Judgement{
-        MISS,
-        BAD,
-        GOOD,
-        GREAT,
-        PERFECT
+            // Constructor accepting const char*
+            NotImplementedException(const char* msg) :
+            message(msg) {}
+
+            // Override what() method, marked
+            // noexcept for modern C++
+            const char* what() const noexcept {
+                return message.c_str();
+            }
     };
 
     class Coord{
@@ -70,14 +73,29 @@ namespace beatmap{
     };
 
     class HitObject{
-        int x;
-        int y;
-        int time;
-        int hitSound;
-        beatmap::ObjectType type;
-        
         public:
-            HitObject(int _x, int _y, int _time, int _hitSound, beatmap::ObjectType _type):
+            enum ObjectType{
+                HIT_CIRCLE,
+                SLIDER,
+                SPINNER
+            };
+
+            enum Judgement{
+                MISS,
+                BAD,
+                GOOD,
+                GREAT,
+                PERFECT
+            };
+
+            enum CurveType{
+                BEZIER,
+                CENTRIPETAL,
+                LINEAR,
+                PERFECT_CIRCLE
+            };
+
+            HitObject(int _x, int _y, int _time, int _hitSound, beatmap::HitObject::ObjectType _type):
                 x(_x),
                 y(_y),
                 time(_time),
@@ -85,8 +103,8 @@ namespace beatmap{
                 type(_type)
                 {}
 
-            static beatmap::HitObject parseHitObjects(std::string& line);
-
+            static std::unique_ptr<beatmap::HitObject>  parseHitObjects(std::string& line);
+            
             int getTime(){
                 return this->time;
             }
@@ -96,23 +114,59 @@ namespace beatmap{
                 return coord; 
             }
 
-            beatmap::ObjectType getType(){
+            beatmap::HitObject::ObjectType getType(){
                 return this->type;
             }
 
-            beatmap::Judgement setJudgement(int time);
+            beatmap::HitObject::CurveType getCurveType(){
+                throw beatmap::NotImplementedException("Not Implemented!");
+            }
 
-            beatmap::Judgement setJudgement(int time, bool followed);
+            std::vector<beatmap::Coord> getAnchorPoints(){
+                throw beatmap::NotImplementedException("Not Implemented!");
+            }
+
+            int getEndTime(){
+                throw beatmap::NotImplementedException("Not Implemented!");
+            }
+
+            int getSlides(){
+                throw beatmap::NotImplementedException("Not Implemented!");
+            }
+
+            beatmap::HitObject::Judgement setJudgement(int time);
+
+            beatmap::HitObject::Judgement setJudgement(int time, bool followed);
+
+        private:
+            int x;
+            int y;
+            int time;
+            int hitSound;
+            beatmap::HitObject::ObjectType type;
+
     };
 
     class Slider : public HitObject{
-        beatmap::CurveType curveType;
+        beatmap::HitObject::CurveType curveType;
         std::vector<beatmap::Coord> anchorPoints;
         int slides;
         double length;
 
         public:
-            Slider(int _x, int _y, int _time, int _hitSound, beatmap::CurveType _curveType, std::vector<beatmap::Coord> _anchorPoints, int _slides, double _length);
+            Slider(int _x, int _y, int _time, int _hitSound, beatmap::HitObject::CurveType _curveType, std::vector<beatmap::Coord> _anchorPoints, int _slides, double _length);
+
+        beatmap::HitObject::CurveType getCurveType(){
+            return this->curveType;
+        } 
+
+        std::vector<beatmap::Coord> getAnchorPoints(){
+            return this->anchorPoints;
+        }
+
+        int getSlides(){
+            return this->slides;
+        }
     };
 
     class Spinning : public HitObject{
@@ -120,6 +174,10 @@ namespace beatmap{
 
         public:
             Spinning(int _x, int _y, int _time, int _hitSound, int _endTime);
+        
+        int getEndTime(){
+            return this->endTime;
+        }
     };
 
 }

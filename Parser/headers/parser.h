@@ -37,7 +37,7 @@ namespace beatmap{
         beatmap::DifficultySection difficultySection;
         std::vector<beatmap::Event> events;
         std::vector<beatmap::TimingPoints> timingPoints;
-        std::vector<beatmap::HitObject> hitObjects; 
+        std::vector<std::unique_ptr<beatmap::HitObject>> hitObjects; 
         int maxCombo = 0;
         int currCombo = 0;
         int judgements[5] = {0, 0, 0, 0, 0};
@@ -48,7 +48,7 @@ namespace beatmap{
                 beatmap::DifficultySection _ds,
                 std::vector<beatmap::Event> _events,
                 std::vector<beatmap::TimingPoints> _timingPoints,
-                std::vector<beatmap::HitObject> _hitObjects
+                std::vector<std::unique_ptr<beatmap::HitObject>> _hitObjects
             ) : generalSection(_gs),
                 metadataSection(_ms),
                 difficultySection(_ds),
@@ -57,7 +57,7 @@ namespace beatmap{
                 hitObjects(_hitObjects)
             {}
             
-            std::vector<beatmap::HitObject> getHitObjects(){
+            std::vector<std::unique_ptr<beatmap::HitObject>> getHitObjects(){
                 return (this->hitObjects);
             }
 
@@ -69,7 +69,7 @@ namespace beatmap{
                 return this->judgements;
             }
             
-            beatmap::Judgement getJudgement(int time, beatmap::HitObject& hitObject, bool followed = false);
+            beatmap::HitObject::Judgement getJudgement(int time, beatmap::HitObject& hitObject, bool followed = false);
     };
 
     Beatmap parseBeatmap(std::string path);

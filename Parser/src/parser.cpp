@@ -13,7 +13,7 @@ beatmap::Beatmap beatmap::parseBeatmap(std::string path){
     beatmap::DifficultySection difficultySection;
     std::vector<beatmap::Event> events;
     std::vector<beatmap::TimingPoints> timings;
-    std::vector<beatmap::HitObject> hitObjects;
+    std::vector<std::unique_ptr<beatmap::HitObject>> hitObjects;
     while(std::getline(fileStream, line)){
         if(line.c_str()[0] == '/' && line.c_str()[1] == '/'){
             continue;
@@ -50,7 +50,13 @@ beatmap::Beatmap beatmap::parseBeatmap(std::string path){
                 timings.push_back(timing);
             }
             else if(currentSection == "HitObjects"){
-                beatmap::HitObject object =  beatmap::HitObject::parseHitObjects(line);
+                std::unique_ptr<beatmap::HitObject> object =  beatmap::HitObject::parseHitObjects(line);
+                beatmap::HitObject* sadge = object.get();
+                if(sadge->getType() == beatmap::HitObject::SLIDER){
+                    for( beatmap::Coord sad : ((beatmap::Slider*) sadge)->getAnchorPoints()){
+                        std::cout << sad.getX() << ":" << sad.getY() << std::endl;
+                    }
+                }
                 hitObjects.push_back(object);
             }
             else if(!currentSection.empty()){
@@ -194,16 +200,16 @@ void beatmap::DifficultySection::loadAttributes(std::map<std::string, std::strin
     }
 }
 
-beatmap::Judgement beatmap::Beatmap::getJudgement(int time, beatmap::HitObject& hitObject, bool followed){
-    beatmap::Judgement judgement;
-    if(hitObject.getType() == beatmap::SLIDER){
+beatmap::HitObject::Judgement beatmap::Beatmap::getJudgement(int time, beatmap::HitObject& hitObject, bool followed){
+    beatmap::HitObject::Judgement judgement;
+    if(hitObject.getType() == beatmap::HitObject::SLIDER){
         judgement = hitObject.setJudgement(time, followed);
     }
     judgement = hitObject.setJudgement(time);
     judgements[judgement]++;
     switch(judgement){
-        case beatmap::PERFECT:
-        case beatmap::GREAT:
+        case beatmap::HitObject::PERFECT:
+        case beatmap::HitObject::GREAT:
             currCombo += 1;
             if(maxCombo < currCombo){
                 maxCombo = currCombo;
