@@ -1,36 +1,35 @@
 #include "../headers/hit-object.h"
 
-beatmap::HitObject beatmap::HitObject::parseHitObjects(std::string line){
+beatmap::HitObject* beatmap::HitObject::parseHitObjects(std::string& line){
     std::vector<std::string> params = beatmap::split(line, ",");
 
     int type = std::stoi(params[3]);
 
     if(beatmap::checkFlag(type, 0)){
-        beatmap::HitObject object = beatmap::HitObject(
+       return new beatmap::HitObject(
             std::stoi(params[0]),
             std::stoi(params[1]),
             std::stoi(params[2]),
             std::stoi(params[4]),
-            beatmap::HIT_CIRCLE
+            beatmap::HitObject::HIT_CIRCLE
         );
-        return object;
     }
     else if(beatmap::checkFlag(type, 1)){
         std::vector<std::string>  slideParams = beatmap::split(params[5],  "|");
-        beatmap::CurveType curveType;
+        beatmap::HitObject::CurveType curveType;
         std::vector<beatmap::Coord> anchorPoints;
         switch(slideParams[0].c_str()[0]){
             case 'B':
-                curveType = beatmap::BEZIER;
+                curveType = beatmap::HitObject::BEZIER;
                 break;
             case 'C':
-                curveType = beatmap::CENTRIPETAL;
+                curveType = beatmap::HitObject::CENTRIPETAL;
                 break;
             case 'L':
-                curveType = beatmap::LINEAR;
+                curveType = beatmap::HitObject::LINEAR;
                 break;
             case 'P':
-                curveType = beatmap::PERFECT_CIRCLE;
+                curveType = beatmap::HitObject::PERFECT_CIRCLE;
                 break;
             default:
                 throw beatmap::InvalidCurveTypeException("Invalid Curve Type!");
@@ -40,7 +39,7 @@ beatmap::HitObject beatmap::HitObject::parseHitObjects(std::string line){
             beatmap::Coord coord = beatmap::Coord(std::stoi(xy[0]), std::stoi(xy[1]));
             anchorPoints.push_back(coord);
         }
-        beatmap::Slider slider = beatmap::Slider(
+        return new beatmap::Slider(
             std::stoi(params[0]),
             std::stoi(params[1]),
             std::stoi(params[2]),
@@ -50,30 +49,67 @@ beatmap::HitObject beatmap::HitObject::parseHitObjects(std::string line){
             std::stoi(params[6]),
             std::stod(params[7])
         );
-        return slider;
+        
     }
     else if(beatmap::checkFlag(type,3)){
-        beatmap::Spinning object = beatmap::Spinning(
+        return new beatmap::Spinning(
             std::stoi(params[0]),
             std::stoi(params[1]),
             std::stoi(params[2]),
             std::stoi(params[4]),
             std::stoi(params[5])
         );
-        return object;
     }
     else{
         throw beatmap::InvalidObjectTypeException("Invalid HitObject!");
     }
 }
 
-beatmap::Slider::Slider(int _x, int _y, int _time, int _hitSound, beatmap::CurveType _curveType, std::vector<beatmap::Coord> _anchorPoints, int _slides, double _length) : beatmap::HitObject(_x, _y, _time, _hitSound, beatmap::SLIDER){
+beatmap::Slider::Slider(int _x, int _y, int _time, int _hitSound, 
+    beatmap::HitObject::CurveType _curveType, std::vector<beatmap::Coord> _anchorPoints, int _slides, double _length) : 
+    beatmap::HitObject(_x, _y, _time, _hitSound, beatmap::HitObject::SLIDER){
     this->curveType = _curveType;
     this->anchorPoints = _anchorPoints;
     this->slides = _slides;
     this->length = _length;
 }
 
-beatmap::Spinning::Spinning(int _x, int _y, int _time, int _hitSound, int _endTime) : beatmap::HitObject(_x, _y, _time, _hitSound, beatmap::SPINNER){
+beatmap::Spinning::Spinning(int _x, int _y, int _time, int _hitSound, int _endTime) : beatmap::HitObject(_x, _y, _time, _hitSound, beatmap::HitObject::SPINNER){
     this->endTime = _endTime;
+}
+
+beatmap::HitObject::Judgement beatmap::HitObject::setJudgement(int time){
+    int diff = abs(time - this->time);
+    if(diff < 42){
+        return beatmap::HitObject::PERFECT;
+    }
+    else if(42 <= diff && diff < 83){
+        return beatmap::HitObject::GREAT;
+    }
+    else if(83 <= diff && diff < 108){
+        return beatmap::HitObject::GOOD;
+    }
+    else if(108 <= diff && diff < 125){
+        return beatmap::HitObject::BAD;
+    }
+    return beatmap::HitObject::MISS;
+}
+
+beatmap::HitObject::Judgement beatmap::HitObject::setJudgement(int time, bool followed){
+    beatmap::HitObject::Judgement judgement = setJudgement(time);
+    if(type == beatmap::HitObject::SLIDER && !followed && judgement != beatmap::HitObject::MISS){
+        switch(judgement){
+            case beatmap::HitObject::PERFECT:
+                judgement = beatmap::HitObject::GREAT;
+            case beatmap::HitObject::GREAT:
+                judgement = beatmap::HitObject::GOOD;
+                break;
+            case beatmap::HitObject::GOOD:
+                judgement = beatmap::HitObject::BAD;
+                break;
+            default:   
+                judgement = beatmap::HitObject::MISS;
+        }
+    }
+    return judgement;
 }
