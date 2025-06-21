@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "BeatComponent.h"
 #include "Parser/headers/hit-object.h"
+#include "Components/SplineComponent.h"
+#include "Components/SplineMeshComponent.h"
 #include "HitObject.generated.h"
 
 UCLASS()
@@ -25,14 +27,23 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Initialize(beatmap::HitObject HitObjectArg);
+	void Initialize(beatmap::HitObject* HitObjectArg);
+
 	void RenderHitCircle();
-	void RenderSlider(beatmap::Slider SliderHitObject);
-	void RenderSpinner(beatmap::Spinning SpinnerHitObject);
+	void RenderSlider(beatmap::HitObject* SliderHitObject);
+	void RenderSpinner(beatmap::HitObject* SpinnerHitObject);
+
+	void RenderSliderHitCircle(beatmap::HitObject* SliderHitObject);
+	void RenderSliderBezier(beatmap::HitObject* SliderHitObject);
+	void RenderSliderPerfectCircle(beatmap::HitObject* SliderHitObject);
+	void RenderSliderCentripetal(beatmap::HitObject* SliderHitObject);
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components");
 	UBeatComponent* beatComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components");
+	USplineMeshComponent* splineMeshComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Mesh;

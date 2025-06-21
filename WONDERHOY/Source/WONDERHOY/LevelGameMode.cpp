@@ -28,11 +28,11 @@ void ALevelGameMode::BeginPlay()
 	UE_LOG(LogTemp, Warning, TEXT("Beatmap Path: %s"), *FString(BeatmapPath.c_str()));
 
     beatmap::Beatmap BeatMap = beatmap::parseBeatmap(BeatmapPath);
-	std::vector<beatmap::HitObject> HitObjects = BeatMap.getHitObjects();
+	std::vector<beatmap::HitObject*> HitObjects = BeatMap.getHitObjects();
 
 	UE_LOG(LogTemp, Warning, TEXT("BeatMap has %d HitObjects"), HitObjects.size());
 
-	for (beatmap::HitObject curHitObject : HitObjects) {
+	for (beatmap::HitObject* curHitObject : HitObjects) {
 		AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
 		HitObjectActor->Initialize(curHitObject);
 	}

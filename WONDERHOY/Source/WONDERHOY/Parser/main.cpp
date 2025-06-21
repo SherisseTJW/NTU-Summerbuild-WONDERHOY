@@ -16,7 +16,7 @@ int main(){
         
     }
     int* sad = beatmap.getAllJudgements();
-    printf("%d\n", objects.size());
+    //printf("%d\n", objects.size());
     for(int i = 0; i < 5; i++){
         printf("%d, %d\n", kek[i], sad[i]);
     }
