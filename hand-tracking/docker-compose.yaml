@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  jupyter:
+    image: quay.io/jupyter/pytorch-notebook:cuda12-lab-4.4.3
+    ports:
+      - "8888:8888"
+    volumes:
+      - "./work:/home/jovyan/work"
+      - "jupyter_data:/home/jovyan/.jupyter"
+    environment:
+      JUPYTER_ENABLE_LAB: "yes" # Use "no" for classic Jupyter Notebook
+      CHOWN_HOME: "yes" # Ensures correct permissions for the mounted volume
+      CHOWN_HOME_PATH: "/home/jovyan/work"
+      # Set the user ID for the jovyan user inside the container
+      NB_UID: 1000 
+      NB_GID: 1000
+    command: start-notebook.sh --NotebookApp.token='' # Start without a token for easy access (not recommended for production)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all # Or specify a number like 1
+              capabilities: [gpu]
+volumes:
+  jupyter_data:
