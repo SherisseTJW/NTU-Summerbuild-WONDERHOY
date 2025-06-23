@@ -44,7 +44,6 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	if (bPastPeriod) {
 		Owner->Destroy();
-		FlushPersistentDebugLines(GetWorld());
 		return;
 	}
 
@@ -53,23 +52,6 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	bool bVisible = !(CurrentRunTime >= StartTimeInS && CurrentRunTime <= EndTimeInS);
 	Owner->SetActorHiddenInGame(bVisible);
-
-	/*
-	if (!bVisible) {
-		USplineComponent* splineComponent = Owner->FindComponentByClass<USplineComponent>();
-		if (!splineComponent) {
-			UE_LOG(LogTemp, Error, TEXT("Owner does not have a SplineComponent"));
-			return;
-		}
-
-		for (int i = 0; i < splineComponent->GetNumberOfSplinePoints() - 1; ++i) {
-			FVector Start = splineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World);
-			FVector End = splineComponent->GetLocationAtSplinePoint(i + 1, ESplineCoordinateSpace::World);
-
-			DrawDebugLine(GetWorld(), Start, End, FColor::Green, true, -1, 0, 5.0f);
-		}
-	}
-*/
 }
 
 void UBeatComponent::Initialize(int StartTimeArg, int EndTimeArg, float CoordXArg, float CoordYArg)

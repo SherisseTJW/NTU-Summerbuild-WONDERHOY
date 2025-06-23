@@ -16,12 +16,7 @@ AHitObject::AHitObject()
 	PrimaryActorTick.bCanEverTick = false;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->SetMobility(EComponentMobility::Movable);
 	RootComponent = Mesh;
-
-	splineMeshComponent = CreateDefaultSubobject<USplineMeshComponent>(TEXT("SplineMesh"));
-    splineMeshComponent->SetupAttachment(RootComponent);
-	splineMeshComponent->SetMobility(EComponentMobility::Movable);
 
 	beatComponent = CreateDefaultSubobject<UBeatComponent>(TEXT("beatComponent"));
 	if (!beatComponent) {
@@ -40,7 +35,7 @@ void AHitObject::Tick(float DeltaTime) {
 
 }
 
-void AHitObject::Initialize(beatmap::HitObject* HitObjectArg) {
+void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc, bool IsNormalHitCircle) {
 	if (!beatComponent) {
 		UE_LOG(LogTemp, Warning, TEXT("Error Initializing HitObject.. BeatComponent not created successfully"));
 		return;
@@ -51,38 +46,56 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg) {
 		return;
 	}
 
-	int Time = HitObjectArg->getTime();
-	beatmap::Coord BeatCoords = HitObjectArg->getCoords();
-	beatmap::HitObject::ObjectType BeatType = HitObjectArg->getType();
 
-	switch (BeatType) {
-	case beatmap::HitObject::ObjectType::HIT_CIRCLE:
-			//RenderHitCircle();
-			break;
-	case beatmap::HitObject::ObjectType::SLIDER:
-			RenderSlider(HitObjectArg);
-			break;
-	case beatmap::HitObject::ObjectType::SPINNER:
-			//RenderSpinner(HitObjectArg);
-			break;
+	UStaticMesh* LoadedMesh; 
+	if (IsNormalHitCircle) {
+		LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
 	}
+	else {
+		LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
+	}
+
+	if (LoadedMesh) {
+		Mesh->SetStaticMesh(LoadedMesh);
+	}
+
+	int _Time = HitObjectArg->getTime();
+	int StartTime = _Time - OffsetTime;
+	int EndTime = _Time + OffsetTime;
+	//beatmap::Coord Loc = HitObjectArg->getCoords();
+
+	beatComponent->Initialize(StartTime, EndTime, Loc.getX(), Loc.getY());
+
+	//int Time = HitObjectArg->getTime();
+	//beatmap::Coord BeatCoords = HitObjectArg->getCoords();
+	//beatmap::HitObject::ObjectType BeatType = HitObjectArg->getType();
+
+	//switch (BeatType) {
+	//case beatmap::HitObject::ObjectType::HIT_CIRCLE:
+	//		RenderHitCircle(HitObjectArg);
+	//		break;
+	//case beatmap::HitObject::ObjectType::SLIDER:
+	//		RenderSlider(HitObjectArg);
+	//		break;
+	//case beatmap::HitObject::ObjectType::SPINNER:
+	//		//RenderSpinner(HitObjectArg);
+	//		break;
+	//}
 }
 
-void AHitObject::RenderHitCircle() {
-		UStaticMesh* LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
-		if (LoadedMesh) {
-			Mesh->SetStaticMesh(LoadedMesh);
-		}
+void AHitObject::RenderHitCircle(beatmap::HitObject* HitCircleObject) {
+
 }
 void AHitObject::RenderSlider(beatmap::HitObject* SliderHitObject) {
 		beatmap::HitObject::CurveType CurveType = SliderHitObject->getCurveType();
 
 		switch (CurveType) {
 			case beatmap::HitObject::CurveType::LINEAR:
-				//AHitObject::RenderSliderHitCircle(SliderHitObject);
+				UE_LOG(LogTemp, Warning, TEXT("Attempting to render LINEAR slider"));
+				AHitObject::RenderSliderLinear(SliderHitObject);
 				break;
 			case beatmap::HitObject::CurveType::BEZIER:
-				AHitObject::RenderSliderBezier(SliderHitObject);
+				//AHitObject::RenderSliderBezier(SliderHitObject);
 				break;
 			case beatmap::HitObject::CurveType::PERFECT_CIRCLE:
 				//AHitObject::RenderSliderPerfectCircle(SliderHitObject);
@@ -100,70 +113,83 @@ void AHitObject::RenderSpinner(beatmap::HitObject* SpinnerHitObject) {
 		}
 }
 
+void AHitObject::RenderSliderLinear(beatmap::HitObject* SliderHitObject) {
+	return;
+	/*std::vector<beatmap::Coord> AnchorCoords = SliderHitObject->getAnchorPoints();
+	if (AnchorCoords.size() < 2) return;
 
-void AHitObject::RenderSliderHitCircle(beatmap::HitObject* SliderHitObject) {
-	Mesh->SetRelativeScale3D(FVector(1.0f, 1.0f, 0.1f)); // Flat cylinder for linear slider
-	UStaticMesh* LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
-	if (LoadedMesh) {
-		Mesh->SetStaticMesh(LoadedMesh);
+	TArray<FVector> Points;
+	for (beatmap::Coord coord : AnchorCoords) {
+		Points.Add(FVector(coord.getX(), 500.0f, coord.getY()));
 	}
-};
+
+	USplineComponent* Spline = NewObject<USplineComponent>(this);
+	Spline->RegisterComponent();
+	Spline->SetMobility(EComponentMobility::Movable);
+	Spline->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
+	for (const FVector& Point : Points) {
+		Spline->AddSplinePoint(Point, ESplineCoordinateSpace::Local);
+	}
+
+	UStaticMesh* LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
+	for (int i = 0; i < Points.Num() - 1; i++) {
+		USplineMeshComponent* Segment = NewObject<USplineMeshComponent>(this);
+		Segment->SetStaticMesh(LoadedMesh);
+		Segment->SetMobility(EComponentMobility::Movable);
+		Segment->RegisterComponent();
+		Segment->AttachToComponent(Spline, FAttachmentTransformRules::KeepRelativeTransform);
+
+		FVector Start = Spline->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::Local);
+		FVector StartTangent = Spline->GetTangentAtSplinePoint(i, ESplineCoordinateSpace::Local);
+		FVector End = Spline->GetLocationAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
+		FVector EndTangent = Spline->GetTangentAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
+
+		Segment->SetStartAndEnd(Start, StartTangent, End, EndTangent);
+	}
+
+	int _Time = SliderHitObject->getTime();
+	int StartTime = _Time - OffsetTime;
+	int EndTime = _Time + OffsetTime;
+
+	FVector Head = Points[0];
+	beatComponent->Initialize(StartTime, EndTime, Head.X, Head.Y);
+
+	UE_LOG(LogTemp, Warning, TEXT("HitObject Actor placed at: %s"), *GetActorLocation().ToString());*/
+}
 
 void AHitObject::RenderSliderBezier(beatmap::HitObject* SliderHitObject) {
-	std::vector<beatmap::Coord> AnchorPoints = SliderHitObject->getAnchorPoints();
+	return;
+	//std::vector<beatmap::Coord> AnchorPoints = SliderHitObject->getAnchorPoints();
 
-	if (!splineMeshComponent) {
-		UE_LOG(LogTemp, Warning, TEXT("SplineMeshComponent is null in RenderSliderBezier."));
-		return;
-	}
+	//if (!splineMeshComponent) {
+	//	UE_LOG(LogTemp, Warning, TEXT("SplineMeshComponent is null in RenderSliderBezier."));
+	//	return;
+	//}
 
-	int Time = SliderHitObject->getTime();
-	for (int i = 1; i < AnchorPoints.size(); i++) {
-		beatmap::Coord prev = AnchorPoints[i - 1];
-		beatmap::Coord cur = AnchorPoints[i];
+	//int Time = SliderHitObject->getTime();
+	//for (int i = 1; i < AnchorPoints.size(); i++) {
+	//	beatmap::Coord prev = AnchorPoints[i - 1];
+	//	beatmap::Coord cur = AnchorPoints[i];
 
-		UStaticMesh* LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
-		USplineMeshComponent* Segment = NewObject<USplineMeshComponent>(this);
-		Segment->RegisterComponent(); 
-		Segment->SetMobility(EComponentMobility::Movable);
-		Segment->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	//	UStaticMesh* LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
+	//	USplineMeshComponent* Segment = NewObject<USplineMeshComponent>(this);
+	//	Segment->RegisterComponent(); 
+	//	Segment->SetMobility(EComponentMobility::Movable);
+	//	Segment->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
-		Segment->SetStaticMesh(LoadedMesh); // Set the cube mesh asset
-		Segment->SetStartAndEnd(
-			FVector(prev.getX(), 500.0f, prev.getY()),
-			FVector(cur.getX(), 500.0f, cur.getY()),
-			FVector::ZeroVector, FVector::ZeroVector
-		);
+	//	Segment->SetStaticMesh(LoadedMesh); // Set the cube mesh asset
+	//	Segment->SetStartAndEnd(
+	//		FVector(prev.getX(), 500.0f, prev.getY()),
+	//		FVector(cur.getX(), 500.0f, cur.getY()),
+	//		FVector::ZeroVector, FVector::ZeroVector
+	//	);
 
-		int _Time = SliderHitObject->getTime();
-		int StartTime = _Time - OffsetTime;
-		int EndTime = _Time + OffsetTime;
-		beatComponent->Initialize(StartTime, EndTime, prev.getX(), prev.getY());
-	}
-
-
-	/*
-	int Time = SliderHitObject->getTime();
-	for (int i = 0; i < AnchorPoints.size(); i++) {
-		beatmap::Coord point = AnchorPoints[i];
-		float x = point.getX();
-		float y = point.getY();
-
-		FVector CurPoint(point.getX(), 500.0f, point.getY());
-		splineComponent->AddSplinePoint(CurPoint, ESplineCoordinateSpace::World);
-		splineComponent->SetTangentAtSplinePoint(i, FVector(50, 50, 0), ESplineCoordinateSpace::World);
-
-		int StartTime = Time - OffsetTime;
-		int EndTime = Time + OffsetTime;
-		beatComponent->Initialize(StartTime, EndTime, x, y);
-	}
-	splineComponent->SetClosedLoop(true); // Close the loop for bezier curve;
-
-	UStaticMesh* LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
-	if (LoadedMesh) {
-		Mesh->SetStaticMesh(LoadedMesh);
-	}
-	*/
+	//	int _Time = SliderHitObject->getTime();
+	//	int StartTime = _Time - OffsetTime;
+	//	int EndTime = _Time + OffsetTime;
+	//	beatComponent->Initialize(StartTime, EndTime, prev.getX(), prev.getY());
+	//}
 };
 
 void AHitObject::RenderSliderPerfectCircle(beatmap::HitObject* SliderHitObject) {

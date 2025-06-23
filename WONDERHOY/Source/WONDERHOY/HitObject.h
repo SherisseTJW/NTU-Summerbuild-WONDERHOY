@@ -27,13 +27,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Initialize(beatmap::HitObject* HitObjectArg);
+	void Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc, bool IsNormalHitCircle);
 
-	void RenderHitCircle();
+	void RenderHitCircle(beatmap::HitObject* HitCircleObject);
 	void RenderSlider(beatmap::HitObject* SliderHitObject);
 	void RenderSpinner(beatmap::HitObject* SpinnerHitObject);
 
-	void RenderSliderHitCircle(beatmap::HitObject* SliderHitObject);
+	void RenderSliderLinear(beatmap::HitObject* SliderHitObject);
 	void RenderSliderBezier(beatmap::HitObject* SliderHitObject);
 	void RenderSliderPerfectCircle(beatmap::HitObject* SliderHitObject);
 	void RenderSliderCentripetal(beatmap::HitObject* SliderHitObject);

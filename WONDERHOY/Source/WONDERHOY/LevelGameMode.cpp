@@ -2,6 +2,7 @@
 
 
 #include "LevelGameMode.h"
+#include "Parser/headers/hit-object.h"
 #include "Parser/headers/parser.h"
 #include "Parser/headers/util.h"
 #include "HitObject.h"
@@ -33,7 +34,34 @@ void ALevelGameMode::BeginPlay()
 	UE_LOG(LogTemp, Warning, TEXT("BeatMap has %d HitObjects"), HitObjects.size());
 
 	for (beatmap::HitObject* curHitObject : HitObjects) {
-		AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
-		HitObjectActor->Initialize(curHitObject);
+		beatmap::HitObject::ObjectType BeatType = curHitObject->getType();
+
+		switch (BeatType) {
+		case beatmap::HitObject::ObjectType::HIT_CIRCLE:
+				RenderHitCircle(curHitObject);
+				break;
+		case beatmap::HitObject::ObjectType::SLIDER:
+				RenderSlider(curHitObject);
+				break;
+		case beatmap::HitObject::ObjectType::SPINNER:
+				RenderSpinner(curHitObject);
+				break;
+		}
 	}
 }
+
+void ALevelGameMode::RenderHitCircle(beatmap::HitObject* HitCircleObject) {
+	AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
+	HitObjectActor->Initialize(HitCircleObject, HitCircleObject->getCoords(), true);
+};
+
+void ALevelGameMode::RenderSlider(beatmap::HitObject* SliderHitObject) {
+	std::vector<beatmap::Coord> AnchorCoords = SliderHitObject->getAnchorPoints();
+
+	for (beatmap::Coord AnchorCoord : AnchorCoords) {
+		AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
+		HitObjectActor->Initialize(SliderHitObject, AnchorCoord, false);
+	}
+};
+void ALevelGameMode::RenderSpinner(beatmap::HitObject* SpinnerHitObject) {
+};
