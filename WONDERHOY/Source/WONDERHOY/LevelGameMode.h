@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Parser/headers/hit-object.h"
+#include "Parser/headers/parser.h"
 #include "LevelGameMode.generated.h"
 
 /**
@@ -20,9 +21,13 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
 	void RenderHitCircle(beatmap::HitObject* HitCircleObject);
 	void RenderSlider(beatmap::HitObject* SliderHitObject);
 	void RenderSpinner(beatmap::HitObject* SpinnerHitObject);
+
+public:
+	beatmap::Beatmap* BeatMap;
 };

@@ -35,8 +35,8 @@ void ALevelGameMode::BeginPlay()
 	std::string BeatmapPath = std::string(TCHAR_TO_UTF8(*ProjectDir)) + "Beatmaps/" + SongName + ".osu";
 	UE_LOG(LogTemp, Warning, TEXT("Beatmap Path: %s"), *FString(BeatmapPath.c_str()));
 
-    beatmap::Beatmap BeatMap = beatmap::parseBeatmap(BeatmapPath);
-	std::vector<beatmap::HitObject*> HitObjects = BeatMap.getHitObjects();
+	BeatMap = new beatmap::Beatmap(beatmap::parseBeatmap(BeatmapPath));
+	std::vector<beatmap::HitObject*> HitObjects = BeatMap->getHitObjects();
 
 	UE_LOG(LogTemp, Warning, TEXT("BeatMap has %d HitObjects"), HitObjects.size());
 
@@ -57,9 +57,18 @@ void ALevelGameMode::BeginPlay()
 	}
 }
 
+void ALevelGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (BeatMap) {
+		delete BeatMap;
+		BeatMap = nullptr;
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
 void ALevelGameMode::RenderHitCircle(beatmap::HitObject* HitCircleObject) {
 	AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
-	HitObjectActor->Initialize(HitCircleObject, HitCircleObject->getCoords());
+	HitObjectActor->Initialize(HitCircleObject, HitCircleObject->getCoords(), BeatMap);
 };
 
 void ALevelGameMode::RenderSlider(beatmap::HitObject* SliderHitObject) {
@@ -67,10 +76,10 @@ void ALevelGameMode::RenderSlider(beatmap::HitObject* SliderHitObject) {
 
 	for (beatmap::Coord AnchorCoord : AnchorCoords) {
 		AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
-		HitObjectActor->Initialize(SliderHitObject, AnchorCoord);
+		HitObjectActor->Initialize(SliderHitObject, AnchorCoord, BeatMap);
 	}
 };
 void ALevelGameMode::RenderSpinner(beatmap::HitObject* SpinnerHitObject) {
 	AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
-	HitObjectActor->Initialize(SpinnerHitObject, SpinnerHitObject->getCoords());
+	HitObjectActor->Initialize(SpinnerHitObject, SpinnerHitObject->getCoords(), BeatMap);
 };

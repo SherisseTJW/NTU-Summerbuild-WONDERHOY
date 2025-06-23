@@ -4,11 +4,14 @@
 #include "HitObject.h"
 #include "BeatComponent.h"
 #include "Parser/headers/hit-object.h"
+#include "Parser/headers/parser.h"
+
 #include "Kismet/KismetMathLibrary.h"
 #include "Math/UnrealMathUtility.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AHitObject::AHitObject()
@@ -65,14 +68,47 @@ void AHitObject::Tick(float DeltaTime) {
 
 void AHitObject::OnMeshClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed) {
 	if (ClickedComp == Mesh) {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("VALID CLICK CLICK CLICK"));
-	}
-	else {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("CLICK CLICK CLICK"));
+		float CurrentRunTime = UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000;
+
+		if (!HitObject) {
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("BASKJDBASKJDBASKJDBASKJDBASKB"));
+			return;
+		}
+
+		float ExpectedTime = HitObject->getTime();
+		FString TimeString = FString::Printf(TEXT("Current Runtime: %.2f seconds, expected time: %.2f seconds"), CurrentRunTime, ExpectedTime);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TimeString);
+
+		beatmap::HitObject::Judgement JudgementResult = Beatmap->getJudgement(CurrentRunTime, HitObject);
+
+		FString JudgementResultStr;
+		switch (JudgementResult) {
+		case beatmap::HitObject::MISS: 
+			JudgementResultStr = TEXT("MISS");
+			break;
+		case beatmap::HitObject::BAD: 
+			JudgementResultStr = TEXT("BAD");
+			break;
+		case beatmap::HitObject::GOOD: 
+			JudgementResultStr = TEXT("GOOD");
+			break;
+		case beatmap::HitObject::GREAT: 
+			JudgementResultStr = TEXT("GREAT");
+			break;
+		case beatmap::HitObject::PERFECT: 
+			JudgementResultStr = TEXT("PERFECT");
+			break;
+		default:
+			JudgementResultStr = TEXT("UNKNOWN");
+			break;
+		}
+
+		FString Output = FString::Printf(TEXT("Judgement: %s"), *JudgementResultStr);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Output);
 	}
 }
 
-void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc) {
+void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc, beatmap::Beatmap* BeatmapArg) {
 	if (!beatComponent) {
 		UE_LOG(LogTemp, Warning, TEXT("Error Initializing HitObject.. BeatComponent not created successfully"));
 		return;
@@ -83,9 +119,11 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc
 		return;
 	}
 
+	Beatmap = BeatmapArg;
+	HitObject = HitObjectArg;
+	HitObjectType = HitObjectArg->getType();
 
 	UStaticMesh* LoadedMesh; 
-	HitObjectType = HitObjectArg->getType();
 	switch (HitObjectType) {
 		case beatmap::HitObject::ObjectType::HIT_CIRCLE:
 			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
@@ -105,7 +143,7 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc
 		Mesh->SetStaticMesh(LoadedMesh);
 	}
 
-	int _Time = HitObjectArg->getTime();
+	int _Time = HitObject->getTime();
 	int StartTime = _Time - OffsetTime;
 	int EndTime = _Time + OffsetTime;
 

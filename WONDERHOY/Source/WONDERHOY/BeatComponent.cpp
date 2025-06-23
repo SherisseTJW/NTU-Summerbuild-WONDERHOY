@@ -101,10 +101,8 @@ void UBeatComponent::SpawnHitObject() {
 
 	FVector2D ViewportSize;
 	UGameViewportClient* ViewportClient = GEngine->GameViewport;
-	if (ViewportClient && ViewportClient->Viewport)
-	{
+	if (ViewportClient && ViewportClient->Viewport) {
 		ViewportSize = ViewportClient->Viewport->GetSizeXY();
-		UE_LOG(LogTemp, Warning, TEXT("Viewport Width: %f, Height: %f"), ViewportSize.X, ViewportSize.Y);
 	}
 
 	// NOTE: OSU Maps - 512 x 384

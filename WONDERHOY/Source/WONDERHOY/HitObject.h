@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BeatComponent.h"
 #include "Parser/headers/hit-object.h"
+#include "Parser/headers/parser.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "HitObject.generated.h"
@@ -30,7 +31,7 @@ public:
 	UFUNCTION()
 	void OnMeshClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
 
-	void Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc);
+	void Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc, beatmap::Beatmap* BeatmapArg);
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components");
@@ -43,8 +44,11 @@ public:
 	UStaticMeshComponent* Mesh;
 
 	// In ms
-	int OffsetTime = 1000;
+	int OffsetTime = 125;
+	int LoadTime = 5000;
 
+	beatmap::Beatmap* Beatmap;
+	beatmap::HitObject* HitObject;
 	beatmap::HitObject::ObjectType HitObjectType;
 };
 
