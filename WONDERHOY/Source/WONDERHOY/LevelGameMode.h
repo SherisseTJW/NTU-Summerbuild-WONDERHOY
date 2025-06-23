@@ -14,6 +14,9 @@ UCLASS()
 class WONDERHOY_API ALevelGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	ALevelGameMode();
 	
 protected:
 	virtual void BeginPlay() override;

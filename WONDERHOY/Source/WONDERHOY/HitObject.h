@@ -27,6 +27,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
+	void OnMeshClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
+
 	void Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc);
 
 public:

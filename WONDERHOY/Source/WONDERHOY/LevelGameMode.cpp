@@ -2,12 +2,19 @@
 
 
 #include "LevelGameMode.h"
+#include "LevelController.h"
+#include "LevelDefaultPawn.h"
 #include "Parser/headers/hit-object.h"
 #include "Parser/headers/parser.h"
 #include "Parser/headers/util.h"
 #include "HitObject.h"
 
 #include <string>
+
+ALevelGameMode::ALevelGameMode() {
+	PlayerControllerClass = ALevelController::StaticClass(); 
+	DefaultPawnClass = ALevelDefaultPawn::StaticClass();
+}
 
 void ALevelGameMode::BeginPlay()
 {

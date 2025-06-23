@@ -53,6 +53,12 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	bool bVisible = !(CurrentRunTime >= StartTimeInS && CurrentRunTime <= EndTimeInS);
 	Owner->SetActorHiddenInGame(bVisible);
+	Owner->SetActorEnableCollision(!bVisible);
+
+	UStaticMeshComponent* MeshComp = Owner->FindComponentByClass<UStaticMeshComponent>();
+	if (MeshComp) {
+		MeshComp->SetCollisionEnabled(!bVisible ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
+	}
 }
 
 void UBeatComponent::Initialize(int StartTimeArg, int EndTimeArg, float CoordXArg, float CoordYArg)
@@ -123,7 +129,7 @@ void UBeatComponent::SpawnHitObject() {
 
 	FVector OffsetVector = (RightVector * OffsetCoordX) + (UpVector * OffsetCoordY);
 
-	FVector SpawnLocation = CameraLocation + (CameraRotation.Vector() * 500.0f) + OffsetVector;
+	FVector SpawnLocation = CameraLocation + (CameraRotation.Vector() * 1000.0f) + OffsetVector;
 
 	UE_LOG(LogTemp, Warning, TEXT("Attempting to spawn at %s"), *SpawnLocation.ToString());
 

@@ -8,6 +8,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
+#include "GameFramework/PlayerController.h"
 
 // Sets default values
 AHitObject::AHitObject()
@@ -18,6 +19,21 @@ AHitObject::AHitObject()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
 
+	Mesh->SetGenerateOverlapEvents(true);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	Mesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	Mesh->bSelectable = true;
+	Mesh->SetNotifyRigidBodyCollision(true);
+	Mesh->SetSimulatePhysics(false);
+	Mesh->SetEnableGravity(false);
+	Mesh->SetMobility(EComponentMobility::Movable);
+	Mesh->bReturnMaterialOnMove = true;
+
+	Mesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	Mesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	Mesh->SetCanEverAffectNavigation(false);
+
 	beatComponent = CreateDefaultSubobject<UBeatComponent>(TEXT("beatComponent"));
 	if (!beatComponent) {
 		UE_LOG(LogTemp, Warning, TEXT("BeatComponent not created successfully"));
@@ -27,12 +43,33 @@ AHitObject::AHitObject()
 // Called when the game starts or when spawned
 void AHitObject::BeginPlay() {
 	Super::BeginPlay();
+
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	if (PC) {
+		PC->bShowMouseCursor = true;
+		PC->bEnableClickEvents = true;
+		PC->bEnableMouseOverEvents = true;
+
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		PC->SetInputMode(InputMode);
+	}
+
+	Mesh->OnClicked.AddDynamic(this, &AHitObject::OnMeshClicked);
 }
 
 // Called every frame
 void AHitObject::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
+}
 
+void AHitObject::OnMeshClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed) {
+	if (ClickedComp == Mesh) {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("VALID CLICK CLICK CLICK"));
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("CLICK CLICK CLICK"));
+	}
 }
 
 void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc) {
