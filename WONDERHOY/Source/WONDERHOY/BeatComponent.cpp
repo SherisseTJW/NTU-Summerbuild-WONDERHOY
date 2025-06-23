@@ -2,6 +2,7 @@
 
 
 #include "BeatComponent.h"
+#include "Engine.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
@@ -92,22 +93,27 @@ void UBeatComponent::SpawnHitObject() {
 		return;
 	}
 
+	FVector2D ViewportSize;
+	UGameViewportClient* ViewportClient = GEngine->GameViewport;
+	if (ViewportClient && ViewportClient->Viewport)
+	{
+		ViewportSize = ViewportClient->Viewport->GetSizeXY();
+		UE_LOG(LogTemp, Warning, TEXT("Viewport Width: %f, Height: %f"), ViewportSize.X, ViewportSize.Y);
+	}
+
 	// NOTE: OSU Maps - 512 x 384
 	// NOTE: Viewport - 1526 x 650
 	float OsuWidth = 512.0f; 
 	float OsuHeight = 384.0f;
+	float UnitScale = 1.5f;
 
 	float NormalizedCoordX = CoordX - (OsuWidth / 2.0f);
 	float NormalizedCoordY = (OsuHeight / 2.0f) - CoordY;
 
-	float UnitScale = 1.5f;
-	int32 ScreenX, ScreenY;
-	PlayerController->GetViewportSize(ScreenX, ScreenY);
+	int32 Margin = 50;
 
-	int32 Margin = 5;
-
-	float OffsetCoordX = NormalizedCoordX * ((ScreenX - Margin) / OsuWidth);
-	float OffsetCoordY = NormalizedCoordY * ((ScreenY - Margin) / OsuHeight);
+	float OffsetCoordX = (NormalizedCoordX * ((ViewportSize.X - Margin) / OsuWidth)) / UnitScale;
+	float OffsetCoordY = (NormalizedCoordY * ((ViewportSize.Y - Margin) / OsuHeight)) / UnitScale;
 
 	FVector CameraLocation = PlayerController->PlayerCameraManager->GetCameraLocation();
 	FRotator CameraRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
