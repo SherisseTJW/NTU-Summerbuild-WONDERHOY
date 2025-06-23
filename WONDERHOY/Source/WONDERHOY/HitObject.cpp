@@ -20,7 +20,6 @@ AHitObject::AHitObject()
 	PrimaryActorTick.bCanEverTick = false;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	RootComponent = Mesh;
 
 	Mesh->SetGenerateOverlapEvents(true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -41,6 +40,19 @@ AHitObject::AHitObject()
 	if (!beatComponent) {
 		UE_LOG(LogTemp, Warning, TEXT("BeatComponent not created successfully"));
 	}
+
+	UMaterialInterface* BaseMaterial = Mesh->GetMaterial(0);
+	if (BaseMaterial) {
+		UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(BaseMaterial, this);
+		if (DynMaterial) {
+			DynMaterial->SetVectorParameterValue("Color", FLinearColor::Red);
+			DynMaterial->SetScalarParameterValue("Roughness", 0.2f);
+
+			Mesh->SetMaterial(0, DynMaterial);
+		}
+	}
+
+	RootComponent = Mesh;
 }
 
 // Called when the game starts or when spawned
@@ -59,6 +71,17 @@ void AHitObject::BeginPlay() {
 	}
 
 	Mesh->OnClicked.AddDynamic(this, &AHitObject::OnMeshClicked);
+
+	UMaterialInterface* BaseMaterial = Mesh->GetMaterial(0);
+	if (BaseMaterial) {
+		UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(BaseMaterial, this);
+		if (DynMaterial) {
+			DynMaterial->SetVectorParameterValue("Color", FLinearColor::Red);
+			DynMaterial->SetScalarParameterValue("Roughness", 0.2f);
+
+			Mesh->SetMaterial(0, DynMaterial);
+		}
+	}
 }
 
 // Called every frame
@@ -144,8 +167,19 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc
 	}
 
 	int _Time = HitObject->getTime();
-	int StartTime = _Time - OffsetTime;
+	int StartTime = _Time - (OffsetTime / 2);
 	int EndTime = _Time + OffsetTime;
 
-	beatComponent->Initialize(StartTime, EndTime, Loc.getX(), Loc.getY());
+	beatComponent->Initialize(StartTime, EndTime, Loc.getX(), Loc.getY(), _Time);
+
+	UMaterialInterface* BaseMaterial = Mesh->GetMaterial(0);
+	if (BaseMaterial) {
+		UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(BaseMaterial, this);
+		if (DynMaterial) {
+			DynMaterial->SetVectorParameterValue("Color", FLinearColor::Red);
+			DynMaterial->SetScalarParameterValue("Roughness", 0.2f);
+
+			Mesh->SetMaterial(0, DynMaterial);
+		}
+	}
 }

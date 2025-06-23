@@ -59,12 +59,29 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	if (MeshComp) {
 		MeshComp->SetCollisionEnabled(!bVisible ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
 	}
+
+	bool beforeClick = CurrentRunTime >= StartTimeInS && CurrentRunTime <= BaseTime;
+	FLinearColor IndicatorColor;
+
+	if (beforeClick) {
+		IndicatorColor = FLinearColor::Red;
+	}
+	else {
+		IndicatorColor = FLinearColor::Green;
+	}
+
+	if (MeshComp) {
+		UMaterialInstanceDynamic* DynMaterial = MeshComp->CreateAndSetMaterialInstanceDynamic(0);
+		if (DynMaterial) {
+			DynMaterial->SetVectorParameterValue("BaseColor", IndicatorColor);
+		}
+	}
 }
 
-void UBeatComponent::Initialize(int StartTimeArg, int EndTimeArg, float CoordXArg, float CoordYArg)
-{
+void UBeatComponent::Initialize(int StartTimeArg, int EndTimeArg, float CoordXArg, float CoordYArg, int TimeArg) {
 	this->StartTime = StartTimeArg;
 	this->EndTime = EndTimeArg;
+	this->BaseTime = TimeArg;
 	this->CoordX = CoordXArg;
 	this->CoordY = CoordYArg;
 

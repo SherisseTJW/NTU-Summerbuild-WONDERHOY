@@ -24,7 +24,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void Initialize(int StartTimeArg, int EndTimeArg, float CoordXArg, float CoordYArg);
+	void Initialize(int StartTimeArg, int EndTimeArg, float CoordXArg, float CoordYArg, int TimeArg);
 
 	void SpawnHitObject();
 
@@ -32,6 +32,7 @@ public:
 private:
 	int StartTime;
 	int EndTime;
+	int BaseTime;
 
 	float CoordX;
 	float CoordY;
