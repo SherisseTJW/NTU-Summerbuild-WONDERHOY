@@ -52,7 +52,7 @@ void ALevelGameMode::BeginPlay()
 
 void ALevelGameMode::RenderHitCircle(beatmap::HitObject* HitCircleObject) {
 	AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
-	HitObjectActor->Initialize(HitCircleObject, HitCircleObject->getCoords(), true);
+	HitObjectActor->Initialize(HitCircleObject, HitCircleObject->getCoords());
 };
 
 void ALevelGameMode::RenderSlider(beatmap::HitObject* SliderHitObject) {
@@ -60,8 +60,10 @@ void ALevelGameMode::RenderSlider(beatmap::HitObject* SliderHitObject) {
 
 	for (beatmap::Coord AnchorCoord : AnchorCoords) {
 		AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
-		HitObjectActor->Initialize(SliderHitObject, AnchorCoord, false);
+		HitObjectActor->Initialize(SliderHitObject, AnchorCoord);
 	}
 };
 void ALevelGameMode::RenderSpinner(beatmap::HitObject* SpinnerHitObject) {
+	AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
+	HitObjectActor->Initialize(SpinnerHitObject, SpinnerHitObject->getCoords());
 };

@@ -27,16 +27,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc, bool IsNormalHitCircle);
-
-	void RenderHitCircle(beatmap::HitObject* HitCircleObject);
-	void RenderSlider(beatmap::HitObject* SliderHitObject);
-	void RenderSpinner(beatmap::HitObject* SpinnerHitObject);
-
-	void RenderSliderLinear(beatmap::HitObject* SliderHitObject);
-	void RenderSliderBezier(beatmap::HitObject* SliderHitObject);
-	void RenderSliderPerfectCircle(beatmap::HitObject* SliderHitObject);
-	void RenderSliderCentripetal(beatmap::HitObject* SliderHitObject);
+	void Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc);
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components");
@@ -50,5 +41,7 @@ public:
 
 	// In ms
 	int OffsetTime = 1000;
+
+	beatmap::HitObject::ObjectType HitObjectType;
 };
 

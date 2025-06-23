@@ -30,7 +30,6 @@ public:
 
 
 private:
-	// NOTE: Replace with the actual Beatmap::HitObject once parser merged
 	int StartTime;
 	int EndTime;
 
