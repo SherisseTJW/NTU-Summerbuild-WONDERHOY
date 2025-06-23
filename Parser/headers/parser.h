@@ -68,6 +68,10 @@ namespace beatmap{
             int* getAllJudgements(){
                 return this->judgements;
             }
+
+            int getAudioLeadIn(){
+                return this->generalSection.getAudioLeadIn();
+            }
             
             beatmap::HitObject::Judgement getJudgement(int time, beatmap::HitObject* hitObject, bool followed = false);
     };
