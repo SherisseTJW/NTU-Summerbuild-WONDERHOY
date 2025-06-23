@@ -3,6 +3,9 @@
 beatmap::Beatmap beatmap::parseBeatmap(std::string path){
     std::string line;
     std::ifstream fileStream(path);
+    if(fileStream.bad()){
+        throw beatmap::BeatmapNotExistException("Beatmap does not exist!");
+    }
     std::string currentSection = "";
     std::map<std::string,std::string> attributes;
     beatmap::GeneralSection generalSection;
@@ -10,7 +13,7 @@ beatmap::Beatmap beatmap::parseBeatmap(std::string path){
     beatmap::DifficultySection difficultySection;
     std::vector<beatmap::Event> events;
     std::vector<beatmap::TimingPoints> timings;
-    std::vector<beatmap::HitObject> hitObjects;
+    std::vector<beatmap::HitObject*> hitObjects;
     while(std::getline(fileStream, line)){
         if(line.c_str()[0] == '/' && line.c_str()[1] == '/'){
             continue;
@@ -47,8 +50,7 @@ beatmap::Beatmap beatmap::parseBeatmap(std::string path){
                 timings.push_back(timing);
             }
             else if(currentSection == "HitObjects"){
-                std::cout << line << std::endl;
-                beatmap::HitObject object =  beatmap::HitObject::parseHitObjects(line);
+                beatmap::HitObject* object =  beatmap::HitObject::parseHitObjects(line);
                 hitObjects.push_back(object);
             }
             else if(!currentSection.empty()){
@@ -71,7 +73,6 @@ beatmap::Beatmap beatmap::parseBeatmap(std::string path){
 
 void beatmap::GeneralSection::loadAttributes(std::map<std::string, std::string> attrs) {
     for (const auto& pair : attrs) {
-        std::cout << pair.first << ": " << pair.second << std::endl;
         if (pair.first == "AudioFilename") {
             audioFilename = pair.second;
         }
@@ -137,7 +138,6 @@ void beatmap::GeneralSection::loadAttributes(std::map<std::string, std::string> 
 
 void beatmap::MetadataSection::loadAttributes(std::map<std::string, std::string> attrs) {
     for (const auto& pair : attrs) {
-        std::cout << pair.first << ": " << pair.second << std::endl;
         if (pair.first == "Title") {
             title = pair.second;
         }
@@ -173,7 +173,6 @@ void beatmap::MetadataSection::loadAttributes(std::map<std::string, std::string>
 
 void beatmap::DifficultySection::loadAttributes(std::map<std::string, std::string> attrs){
     for (const auto& pair : attrs) {
-        std::cout << pair.first << ": " << pair.second << std::endl;
         if (pair.first == "HpDrainRate") {
             hpDrainRate = std::stod(pair.second);
         }
@@ -193,4 +192,25 @@ void beatmap::DifficultySection::loadAttributes(std::map<std::string, std::strin
             sliderTickRate = std::stod(pair.second);
         }
     }
+}
+
+beatmap::HitObject::Judgement beatmap::Beatmap::getJudgement(int time, beatmap::HitObject* hitObject, bool followed){
+    beatmap::HitObject::Judgement judgement;
+    if(hitObject->getType() == beatmap::HitObject::SLIDER){
+        judgement = hitObject->setJudgement(time, followed);
+    }
+    judgement = hitObject->setJudgement(time);
+    judgements[judgement]++;
+    switch(judgement){
+        case beatmap::HitObject::PERFECT:
+        case beatmap::HitObject::GREAT:
+            currCombo += 1;
+            if(maxCombo < currCombo){
+                maxCombo = currCombo;
+            }
+            break;
+        default:
+            currCombo = 0;
+    }
+    return judgement;
 }

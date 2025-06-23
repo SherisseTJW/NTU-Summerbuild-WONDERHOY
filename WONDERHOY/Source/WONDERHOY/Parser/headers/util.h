@@ -24,12 +24,6 @@ namespace beatmap{
         ALOW
     };
 
-    enum CurveType{
-        BEZIER,
-        CENTRIPETAL,
-        LINEAR,
-        PERFECT_CIRCLE
-    };
 
     std::vector<std::string> split(const std::string& s, const std::string& delimiter);
 
