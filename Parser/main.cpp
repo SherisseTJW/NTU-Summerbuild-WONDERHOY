@@ -6,6 +6,7 @@ int main(){
     std::vector<beatmap::HitObject*> objects = beatmap.getHitObjects();
     int kek[5] = {0,0,0,0,0};
     for(beatmap::HitObject* object : objects){
+        std::cout << object->getTime() << std::endl;
         if(object->getType() == beatmap::HitObject::SLIDER){
             for( beatmap::Coord sad : (object)->getAnchorPoints()){
                 std::cout << sad.getX() << ":" << sad.getY() << std::endl;

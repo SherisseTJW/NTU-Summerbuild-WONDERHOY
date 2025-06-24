@@ -30,10 +30,6 @@ namespace beatmap{
         public:
             void loadAttributes(std::map<std::string, std::string>);
 
-            std::string getAudioFilename(){
-                return this->audioFilename;
-            }
-
             int getAudioLeadIn(){
                 return this->audioLeadin;
             }
