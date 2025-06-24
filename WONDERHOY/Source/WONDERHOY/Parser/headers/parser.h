@@ -68,7 +68,19 @@ namespace beatmap{
             int* getAllJudgements(){
                 return this->judgements;
             }
-            
+
+            int getAudioLeadIn(){
+                return this->generalSection.getAudioLeadIn();
+            }
+
+            beatmap::MetadataSection getMetadataSection(){
+                return this->metadataSection;
+            }
+
+            std::string getAudioFileName(){
+                return "" + this->metadataSection.getTitle();
+            }
+
             beatmap::HitObject::Judgement getJudgement(int time, beatmap::HitObject* hitObject, bool followed = false);
     };
 

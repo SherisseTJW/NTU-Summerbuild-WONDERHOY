@@ -18,6 +18,14 @@ namespace beatmap{
 
         public:
             void loadAttributes(std::map<std::string, std::string>);
+
+            std::string getTitle(){
+                return this->title;
+            }
+            
+            std::string getArtist(){
+                return this->artist;
+            }
     };
 }
 

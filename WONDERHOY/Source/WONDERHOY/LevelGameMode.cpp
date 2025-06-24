@@ -9,6 +9,11 @@
 #include "Parser/headers/util.h"
 #include "HitObject.h"
 
+#include "Sound/SoundWave.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
+#include "Kismet/GameplayStatics.h"
+
 #include <string>
 
 ALevelGameMode::ALevelGameMode() {
@@ -38,8 +43,31 @@ void ALevelGameMode::BeginPlay()
 	BeatMap = new beatmap::Beatmap(beatmap::parseBeatmap(BeatmapPath));
 	std::vector<beatmap::HitObject*> HitObjects = BeatMap->getHitObjects();
 
-
 	UE_LOG(LogTemp, Warning, TEXT("BeatMap has %d HitObjects"), HitObjects.size());
+
+	std::string AudioFileName = BeatMap->getAudioFileName();
+	FString AudioFilePath = (std::string(TCHAR_TO_UTF8(*ProjectDir)) + "Beatmaps/" + AudioFileName + "." + AudioFileName).c_str();
+	
+	UE_LOG(LogTemp, Warning, TEXT("Attempting to load audio: %s"), *AudioFilePath);
+	USoundWave * Sound = Cast<USoundWave>(StaticLoadObject(USoundWave::StaticClass(), nullptr, *AudioFilePath));
+
+	if (Sound) {
+		UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(GetWorld(), Sound);
+		if (AudioComponent) {
+			FTimerHandle TimerHandle;
+			GetWorldTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([this, Sound]() {
+				UGameplayStatics::PlaySound2D(GetWorld(), Sound);
+				UE_LOG(LogTemp, Warning, TEXT("Playing pre-imported audio after delay."));
+			}), 0.5, false);
+			AudioComponent->Play();
+		}
+		else {
+			UE_LOG(LogTemp, Warning, TEXT("Failed to spawn audio component."));
+		}
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Failed to load audio: %s"), *AudioFilePath);
+	}
 
 	for (beatmap::HitObject* curHitObject : HitObjects) {
 		beatmap::HitObject::ObjectType BeatType = curHitObject->getType();
