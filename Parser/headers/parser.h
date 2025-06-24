@@ -72,7 +72,15 @@ namespace beatmap{
             int getAudioLeadIn(){
                 return this->generalSection.getAudioLeadIn();
             }
-            
+
+            beatmap::MetadataSection getMetadataSection(){
+                return this->metadataSection;
+            }
+
+            std::string getAudioFileName(){
+                return ".\\Wonderhoy\\Content\\BeatMaps\\" + this->metadataSection.getTitle() + ".mp3";
+            }
+
             beatmap::HitObject::Judgement getJudgement(int time, beatmap::HitObject* hitObject, bool followed = false);
     };
 
