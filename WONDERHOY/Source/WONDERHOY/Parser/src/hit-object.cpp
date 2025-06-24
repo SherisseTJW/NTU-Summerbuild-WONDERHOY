@@ -78,8 +78,8 @@ beatmap::Spinning::Spinning(int _x, int _y, int _time, int _hitSound, int _endTi
     this->endTime = _endTime;
 }
 
-beatmap::HitObject::Judgement beatmap::HitObject::setJudgement(int time){
-    int diff = abs(time - this->time);
+beatmap::HitObject::Judgement beatmap::HitObject::setJudgement(int timeArg){
+    int diff = abs(timeArg - this->time);
     if(diff < 42){
         return beatmap::HitObject::PERFECT;
     }
@@ -95,8 +95,8 @@ beatmap::HitObject::Judgement beatmap::HitObject::setJudgement(int time){
     return beatmap::HitObject::MISS;
 }
 
-beatmap::HitObject::Judgement beatmap::HitObject::setJudgement(int time, bool followed){
-    beatmap::HitObject::Judgement judgement = setJudgement(time);
+beatmap::HitObject::Judgement beatmap::HitObject::setJudgement(int timeArg, bool followed){
+    beatmap::HitObject::Judgement judgement = setJudgement(timeArg);
     if(type == beatmap::HitObject::SLIDER && !followed && judgement != beatmap::HitObject::MISS){
         switch(judgement){
             case beatmap::HitObject::PERFECT:

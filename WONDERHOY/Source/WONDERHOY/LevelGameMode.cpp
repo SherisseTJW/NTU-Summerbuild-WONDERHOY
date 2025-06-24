@@ -46,7 +46,10 @@ void ALevelGameMode::BeginPlay()
 	UE_LOG(LogTemp, Warning, TEXT("BeatMap has %d HitObjects"), HitObjects.size());
 
 	std::string AudioFileName = BeatMap->getAudioFileName();
-	FString AudioFilePath = (std::string(TCHAR_TO_UTF8(*ProjectDir)) + "Beatmaps/" + AudioFileName + "." + AudioFileName).c_str();
+	UE_LOG(LogTemp, Warning, TEXT("Audio file name: "), *FString(AudioFileName.c_str()));
+
+
+	FString AudioFilePath = ("/Game/Beatmaps/" + AudioFileName + "." + AudioFileName).c_str();
 	
 	UE_LOG(LogTemp, Warning, TEXT("Attempting to load audio: %s"), *AudioFilePath);
 	USoundWave * Sound = Cast<USoundWave>(StaticLoadObject(USoundWave::StaticClass(), nullptr, *AudioFilePath));

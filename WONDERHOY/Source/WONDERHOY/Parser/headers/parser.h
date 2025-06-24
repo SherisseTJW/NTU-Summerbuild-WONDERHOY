@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <regex>
 #include "sections/general.h"
 #include "sections/metadata.h"
 #include "sections/diffculty.h"
@@ -78,7 +79,7 @@ namespace beatmap{
             }
 
             std::string getAudioFileName(){
-                return "" + this->metadataSection.getTitle();
+                return std::regex_replace(this->metadataSection.getTitle(), std::regex("[ ()]"), "_");
             }
 
             beatmap::HitObject::Judgement getJudgement(int time, beatmap::HitObject* hitObject, bool followed = false);
