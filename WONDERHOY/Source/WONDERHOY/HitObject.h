@@ -34,6 +34,9 @@ public:
 	void Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc, beatmap::Beatmap* BeatmapArg);
 
 public:
+	UPROPERTY(EditAnywhere)
+	UMaterialInterface* BaseColorMaterial;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components");
 	UBeatComponent* beatComponent;
 
@@ -45,7 +48,7 @@ public:
 
 	// In ms
 	int OffsetTime = 125;
-	int LoadTime = 5000;
+	int LoadTime = 300;
 
 	beatmap::Beatmap* Beatmap;
 	beatmap::HitObject* HitObject;

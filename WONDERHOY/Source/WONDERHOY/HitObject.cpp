@@ -20,6 +20,19 @@ AHitObject::AHitObject()
 	PrimaryActorTick.bCanEverTick = false;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	RootComponent = Mesh;
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> MaterialFinder(TEXT("/Game/M_Colorizable.M_Colorizable"));
+	if (MaterialFinder.Succeeded()) {
+		BaseColorMaterial = MaterialFinder.Object;
+		UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(BaseColorMaterial, this);
+		DynMaterial->SetVectorParameterValue("Color", FLinearColor::Red);
+
+		Mesh->SetMaterial(0, DynMaterial);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Failed to load base color material"));
+	}
 
 	Mesh->SetGenerateOverlapEvents(true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -40,19 +53,6 @@ AHitObject::AHitObject()
 	if (!beatComponent) {
 		UE_LOG(LogTemp, Warning, TEXT("BeatComponent not created successfully"));
 	}
-
-	UMaterialInterface* BaseMaterial = Mesh->GetMaterial(0);
-	if (BaseMaterial) {
-		UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(BaseMaterial, this);
-		if (DynMaterial) {
-			DynMaterial->SetVectorParameterValue("Color", FLinearColor::Red);
-			DynMaterial->SetScalarParameterValue("Roughness", 0.2f);
-
-			Mesh->SetMaterial(0, DynMaterial);
-		}
-	}
-
-	RootComponent = Mesh;
 }
 
 // Called when the game starts or when spawned
@@ -71,17 +71,6 @@ void AHitObject::BeginPlay() {
 	}
 
 	Mesh->OnClicked.AddDynamic(this, &AHitObject::OnMeshClicked);
-
-	UMaterialInterface* BaseMaterial = Mesh->GetMaterial(0);
-	if (BaseMaterial) {
-		UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(BaseMaterial, this);
-		if (DynMaterial) {
-			DynMaterial->SetVectorParameterValue("Color", FLinearColor::Red);
-			DynMaterial->SetScalarParameterValue("Roughness", 0.2f);
-
-			Mesh->SetMaterial(0, DynMaterial);
-		}
-	}
 }
 
 // Called every frame
@@ -152,13 +141,13 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc
 			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
 			break;
 		case beatmap::HitObject::ObjectType::SLIDER:
-			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
+			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
 			break;
 		case beatmap::HitObject::ObjectType::SPINNER:
 			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
 			break;
 		default:
-			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
+			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
 			break;
 	}
 
@@ -166,20 +155,9 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc
 		Mesh->SetStaticMesh(LoadedMesh);
 	}
 
-	int _Time = HitObject->getTime();
-	int StartTime = _Time - (OffsetTime / 2);
-	int EndTime = _Time + OffsetTime;
+	int _Time = HitObject->getTime() + LoadTime;
+	int StartTime = _Time;
+	int EndTime = _Time + (OffsetTime / 2);
 
 	beatComponent->Initialize(StartTime, EndTime, Loc.getX(), Loc.getY(), _Time);
-
-	UMaterialInterface* BaseMaterial = Mesh->GetMaterial(0);
-	if (BaseMaterial) {
-		UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(BaseMaterial, this);
-		if (DynMaterial) {
-			DynMaterial->SetVectorParameterValue("Color", FLinearColor::Red);
-			DynMaterial->SetScalarParameterValue("Roughness", 0.2f);
-
-			Mesh->SetMaterial(0, DynMaterial);
-		}
-	}
 }

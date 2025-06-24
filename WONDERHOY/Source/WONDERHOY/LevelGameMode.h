@@ -30,4 +30,6 @@ public:
 
 public:
 	beatmap::Beatmap* BeatMap;
+
+	int loadedHitObjectsCount = 0;
 };

@@ -50,6 +50,7 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	float StartTimeInS = this->StartTime / 1000;
 	float EndTimeInS = this->EndTime / 1000;
+	float BaseTimeInS = this->BaseTime / 1000;
 
 	bool bVisible = !(CurrentRunTime >= StartTimeInS && CurrentRunTime <= EndTimeInS);
 	Owner->SetActorHiddenInGame(bVisible);
@@ -60,21 +61,19 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		MeshComp->SetCollisionEnabled(!bVisible ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
 	}
 
-	bool beforeClick = CurrentRunTime >= StartTimeInS && CurrentRunTime <= BaseTime;
 	FLinearColor IndicatorColor;
-
-	if (beforeClick) {
-		IndicatorColor = FLinearColor::Red;
-	}
-	else {
-		IndicatorColor = FLinearColor::Green;
-	}
-
-	if (MeshComp) {
-		UMaterialInstanceDynamic* DynMaterial = MeshComp->CreateAndSetMaterialInstanceDynamic(0);
-		if (DynMaterial) {
-			DynMaterial->SetVectorParameterValue("BaseColor", IndicatorColor);
+	if (CurrentRunTime >= StartTimeInS) {
+		if (CurrentRunTime <= BaseTimeInS) {
+			IndicatorColor = FLinearColor(1.0f, 0.5f, 0.0f);
 		}
+		else {
+			IndicatorColor = FLinearColor::Green;
+		}
+	}
+
+	UMaterialInstanceDynamic* DynMaterial = Cast<UMaterialInstanceDynamic>(MeshComp->GetMaterial(0));
+	if (DynMaterial) {
+		DynMaterial->SetVectorParameterValue("Color", IndicatorColor);
 	}
 }
 

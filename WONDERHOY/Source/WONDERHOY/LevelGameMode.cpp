@@ -55,6 +55,8 @@ void ALevelGameMode::BeginPlay()
 				break;
 		}
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Loaded %d HitObjects"), loadedHitObjectsCount);
 }
 
 void ALevelGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -69,6 +71,8 @@ void ALevelGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ALevelGameMode::RenderHitCircle(beatmap::HitObject* HitCircleObject) {
 	AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
 	HitObjectActor->Initialize(HitCircleObject, HitCircleObject->getCoords(), BeatMap);
+
+	loadedHitObjectsCount++;
 };
 
 void ALevelGameMode::RenderSlider(beatmap::HitObject* SliderHitObject) {
@@ -77,9 +81,13 @@ void ALevelGameMode::RenderSlider(beatmap::HitObject* SliderHitObject) {
 	for (beatmap::Coord AnchorCoord : AnchorCoords) {
 		AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
 		HitObjectActor->Initialize(SliderHitObject, AnchorCoord, BeatMap);
+
+		loadedHitObjectsCount++;
 	}
 };
 void ALevelGameMode::RenderSpinner(beatmap::HitObject* SpinnerHitObject) {
 	AHitObject* HitObjectActor = GetWorld()->SpawnActor<AHitObject>(AHitObject::StaticClass());
 	HitObjectActor->Initialize(SpinnerHitObject, SpinnerHitObject->getCoords(), BeatMap);
+
+	loadedHitObjectsCount++;
 };
