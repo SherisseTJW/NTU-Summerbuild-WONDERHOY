@@ -7,6 +7,8 @@
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 
+#include <cmath>
+
 // Sets default values for this component's properties
 UBeatComponent::UBeatComponent()
 {
@@ -143,7 +145,7 @@ void UBeatComponent::SpawnHitObject() {
 
 	FVector OffsetVector = (RightVector * OffsetCoordX) + (UpVector * OffsetCoordY);
 
-	FVector SpawnLocation = CameraLocation + (CameraRotation.Vector() * 1000.0f) + OffsetVector;
+	FVector SpawnLocation = CameraLocation + (CameraRotation.Vector() * 800.0f) + OffsetVector;
 
 	UE_LOG(LogTemp, Warning, TEXT("Attempting to spawn at %s"), *SpawnLocation.ToString());
 

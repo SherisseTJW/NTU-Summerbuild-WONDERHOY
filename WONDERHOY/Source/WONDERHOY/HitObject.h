@@ -47,8 +47,8 @@ public:
 	UStaticMeshComponent* Mesh;
 
 	// In ms
-	int OffsetTime = 125;
-	int LoadTime = 300;
+	int OffsetTime = 1000;
+	int LoadTime = 500;
 
 	beatmap::Beatmap* Beatmap;
 	beatmap::HitObject* HitObject;

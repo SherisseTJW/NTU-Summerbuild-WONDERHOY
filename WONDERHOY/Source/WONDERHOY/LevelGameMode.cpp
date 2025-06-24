@@ -38,6 +38,7 @@ void ALevelGameMode::BeginPlay()
 	BeatMap = new beatmap::Beatmap(beatmap::parseBeatmap(BeatmapPath));
 	std::vector<beatmap::HitObject*> HitObjects = BeatMap->getHitObjects();
 
+
 	UE_LOG(LogTemp, Warning, TEXT("BeatMap has %d HitObjects"), HitObjects.size());
 
 	for (beatmap::HitObject* curHitObject : HitObjects) {

@@ -80,12 +80,7 @@ void AHitObject::Tick(float DeltaTime) {
 
 void AHitObject::OnMeshClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed) {
 	if (ClickedComp == Mesh) {
-		float CurrentRunTime = UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000;
-
-		if (!HitObject) {
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("BASKJDBASKJDBASKJDBASKJDBASKB"));
-			return;
-		}
+		float CurrentRunTime = (UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000) - LoadTime;
 
 		float ExpectedTime = HitObject->getTime();
 		FString TimeString = FString::Printf(TEXT("Current Runtime: %.2f seconds, expected time: %.2f seconds"), CurrentRunTime, ExpectedTime);
@@ -138,15 +133,19 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc
 	UStaticMesh* LoadedMesh; 
 	switch (HitObjectType) {
 		case beatmap::HitObject::ObjectType::HIT_CIRCLE:
+			UE_LOG(LogTemp, Warning, TEXT("HitObject Type: HIT_CIRCLE"));
 			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
 			break;
 		case beatmap::HitObject::ObjectType::SLIDER:
+			UE_LOG(LogTemp, Warning, TEXT("HitObject Type: SLIDER"));
 			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
 			break;
 		case beatmap::HitObject::ObjectType::SPINNER:
+			UE_LOG(LogTemp, Warning, TEXT("HitObject Type: SPINNER"));
 			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
 			break;
 		default:
+			UE_LOG(LogTemp, Warning, TEXT("HitObject Type: DEFAULT"));
 			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
 			break;
 	}
@@ -156,8 +155,8 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc
 	}
 
 	int _Time = HitObject->getTime() + LoadTime;
-	int StartTime = _Time;
-	int EndTime = _Time + (OffsetTime / 2);
+	int StartTime = _Time - OffsetTime;
+	int EndTime = _Time + OffsetTime;
 
 	beatComponent->Initialize(StartTime, EndTime, Loc.getX(), Loc.getY(), _Time);
 }
