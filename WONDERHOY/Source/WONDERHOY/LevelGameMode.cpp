@@ -57,11 +57,7 @@ void ALevelGameMode::BeginPlay()
 	if (Sound) {
 		UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(GetWorld(), Sound);
 		if (AudioComponent) {
-			FTimerHandle TimerHandle;
-			GetWorldTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([this, Sound]() {
-				UGameplayStatics::PlaySound2D(GetWorld(), Sound);
-				UE_LOG(LogTemp, Warning, TEXT("Playing pre-imported audio after delay."));
-			}), 0.5, false);
+			UGameplayStatics::PlaySound2D(GetWorld(), Sound);
 			AudioComponent->Play();
 		}
 		else {
