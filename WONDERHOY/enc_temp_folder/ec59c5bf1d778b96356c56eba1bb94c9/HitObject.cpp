@@ -42,7 +42,7 @@ AHitObject::AHitObject()
 
 	int32 RandomCharIndex = FMath::RandRange(0, CharacterClasses.Num() - 1);
     CharacterVisual->SetChildActorClass(CharacterClasses[RandomCharIndex]);
-	CharacterVisual->AddWorldTransform(FTransform(FVector(FMath::FRandRange(-0.0f, 10.0f), 0.0f, 0.0f)));
+	CharacterVisual->AddWorldTransform(FTransform(FVector(0.0f, 0.0f, FMath::FRandRange(-10.0f, 10.0f))));
 
 	Mesh->SetGenerateOverlapEvents(true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
