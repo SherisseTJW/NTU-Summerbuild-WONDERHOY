@@ -29,7 +29,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-	void OnMeshClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
+	virtual void OnMouseOverStart(UPrimitiveComponent* TouchedComp);
+
+	UFUNCTION()
+	virtual void OnMouseOverEnd(UPrimitiveComponent* TouchedComp);
 
 	void Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc, beatmap::Beatmap* BeatmapArg);
 
@@ -49,6 +52,8 @@ public:
 	// In ms
 	int OffsetTime = 1000;
 	int LoadTime = 500;
+
+	float StartMouseOverTime = 0.0f;
 
 	beatmap::Beatmap* Beatmap;
 	beatmap::HitObject* HitObject;

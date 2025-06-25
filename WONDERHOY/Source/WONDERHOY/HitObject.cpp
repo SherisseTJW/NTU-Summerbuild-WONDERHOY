@@ -70,7 +70,8 @@ void AHitObject::BeginPlay() {
 		PC->SetInputMode(InputMode);
 	}
 
-	Mesh->OnClicked.AddDynamic(this, &AHitObject::OnMeshClicked);
+	Mesh->OnBeginCursorOver.AddDynamic(this, &AHitObject::OnMouseOverStart);
+	Mesh->OnEndCursorOver.AddDynamic(this, &AHitObject::OnMouseOverEnd);
 }
 
 // Called every frame
@@ -78,12 +79,19 @@ void AHitObject::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 }
 
-void AHitObject::OnMeshClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed) {
-	if (ClickedComp == Mesh) {
+void AHitObject::OnMouseOverStart(UPrimitiveComponent* TouchedComp) {
+	if (TouchedComp == Mesh) {
+		StartMouseOverTime = UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000; // Convert to milliseconds
+	}
+}
+
+void AHitObject::OnMouseOverEnd(UPrimitiveComponent* TouchedComp) {
+	if (TouchedComp == Mesh) {
 		float CurrentRunTime = (UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000) - LoadTime;
+		float RegisterTime = (CurrentRunTime + StartMouseOverTime) / 2;
 
 		float ExpectedTime = HitObject->getTime();
-		FString TimeString = FString::Printf(TEXT("Current Runtime: %.2f seconds, expected time: %.2f seconds"), CurrentRunTime, ExpectedTime);
+		FString TimeString = FString::Printf(TEXT("Registered: %.2f seconds, expected time: %.2f seconds"), RegisterTime, ExpectedTime);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TimeString);
 
 		beatmap::HitObject::Judgement JudgementResult = Beatmap->getJudgement(CurrentRunTime, HitObject);
@@ -112,6 +120,9 @@ void AHitObject::OnMeshClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPres
 
 		FString Output = FString::Printf(TEXT("Judgement: %s"), *JudgementResultStr);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Output);
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Mouse is not over the HitObject Mesh."));
 	}
 }
 
