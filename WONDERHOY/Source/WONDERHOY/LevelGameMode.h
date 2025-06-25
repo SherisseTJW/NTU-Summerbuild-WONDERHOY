@@ -35,6 +35,5 @@ public:
 	beatmap::Beatmap* BeatMap;
 
 	int loadedHitObjectsCount = 0;
-
 	float lastHitObjectEndTime = 0.0f;
 };

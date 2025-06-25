@@ -26,16 +26,15 @@ AHitObject::AHitObject()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
 
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> MaterialFinder(TEXT("/Game/M_Colorizable.M_Colorizable"));
-	if (MaterialFinder.Succeeded()) {
-		BaseColorMaterial = MaterialFinder.Object;
-		UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(BaseColorMaterial, this);
-		DynMaterial->SetVectorParameterValue("Color", FLinearColor::Green);
+	CharacterVisual = CreateDefaultSubobject<UChildActorComponent>(TEXT("CharacterVisual"));
+	CharacterVisual->SetupAttachment(RootComponent);
 
-		Mesh->SetMaterial(0, DynMaterial);
+	static ConstructorHelpers::FClassFinder<AActor> CharacterBP(TEXT("/Game/Assets/Characters/BP_CharacterBase"));
+	if (CharacterBP.Succeeded()) {
+		CharacterVisual->SetChildActorClass(CharacterBP.Class);
 	}
 	else {
-		UE_LOG(LogTemp, Warning, TEXT("Failed to load base color material"));
+		UE_LOG(LogTemp, Warning, TEXT("Failed to find BP_CharacterBase"));
 	}
 
 	Mesh->SetGenerateOverlapEvents(true);
@@ -83,11 +82,6 @@ void AHitObject::BeginPlay() {
 
 	Mesh->OnBeginCursorOver.AddDynamic(this, &AHitObject::OnMouseOverStart);
 	Mesh->OnEndCursorOver.AddDynamic(this, &AHitObject::OnMouseOverEnd);
-
-	UClass* LoadedWidgetClass = LoadClass<UUserWidget>(nullptr, TEXT("/Game/UI/W_JudgementText.W_JudgementText_C"));
-	if (LoadedWidgetClass) {
-		JudgementWidgetComponent->SetWidgetClass(LoadedWidgetClass);
-	}
 }
 
 // Called every frame
@@ -137,20 +131,8 @@ void AHitObject::OnMouseOverEnd(UPrimitiveComponent* TouchedComp) {
 		FString Output = FString::Printf(TEXT("Judgement: %s"), *JudgementResultStr);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Output);
 
-		/*
-		if (UUserWidget* Widget = JudgementWidgetComponent->GetUserWidgetObject()) {
-			UE_LOG(LogTemp, Warning, TEXT("Judgement Widget found, NOT SET"));
-			if (UTextBlock* TextBlock = Cast<UTextBlock>(Widget->GetWidgetFromName(TEXT("JudgementText")))) {
-				UE_LOG(LogTemp, Warning, TEXT("Judgement Text Block found and set."));
-				TextBlock->SetText(FText::FromString(JudgementResultStr));
-			}
-
-			JudgementWidgetComponent->SetVisibility(true);
-		}*/
-
 		// Once hovered, destroy the HitObject so its not clickable again or visible
 		this->Destroy();
-		//this->SetHidden(true);
 	}
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Mouse is not over the HitObject Mesh."));
@@ -172,29 +154,24 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc
 	HitObject = HitObjectArg;
 	HitObjectType = HitObjectArg->getType();
 
-	UStaticMesh* LoadedMesh; 
 	switch (HitObjectType) {
 		case beatmap::HitObject::ObjectType::HIT_CIRCLE:
 			UE_LOG(LogTemp, Warning, TEXT("HitObject Type: HIT_CIRCLE"));
-			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
 			break;
 		case beatmap::HitObject::ObjectType::SLIDER:
 			UE_LOG(LogTemp, Warning, TEXT("HitObject Type: SLIDER"));
-			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
 			break;
 		case beatmap::HitObject::ObjectType::SPINNER:
 			UE_LOG(LogTemp, Warning, TEXT("HitObject Type: SPINNER"));
-			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
 			break;
 		default:
 			UE_LOG(LogTemp, Warning, TEXT("HitObject Type: DEFAULT"));
-			LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
 			break;
 	}
 
-	if (LoadedMesh) {
+	/*if (LoadedMesh) {
 		Mesh->SetStaticMesh(LoadedMesh);
-	}
+	}*/
 
 	int _Time = HitObject->getTime();
 	int StartTime = _Time - 10; // Adjust a bit for unreal delay

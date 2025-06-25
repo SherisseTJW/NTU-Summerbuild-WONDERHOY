@@ -42,6 +42,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	UMaterialInterface* BaseColorMaterial;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visual")
+	UChildActorComponent* CharacterVisual;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components");
 	UBeatComponent* beatComponent;
 
