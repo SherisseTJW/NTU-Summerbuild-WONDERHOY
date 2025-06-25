@@ -26,7 +26,7 @@ AHitObject::AHitObject()
 	if (MaterialFinder.Succeeded()) {
 		BaseColorMaterial = MaterialFinder.Object;
 		UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(BaseColorMaterial, this);
-		DynMaterial->SetVectorParameterValue("Color", FLinearColor::Red);
+		DynMaterial->SetVectorParameterValue("Color", FLinearColor::Green);
 
 		Mesh->SetMaterial(0, DynMaterial);
 	}
@@ -120,6 +120,9 @@ void AHitObject::OnMouseOverEnd(UPrimitiveComponent* TouchedComp) {
 
 		FString Output = FString::Printf(TEXT("Judgement: %s"), *JudgementResultStr);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Output);
+
+		// Once hovered, destroy the HitObject so its not clickable again or visible
+		this->Destroy();
 	}
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Mouse is not over the HitObject Mesh."));
@@ -166,7 +169,7 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc
 	}
 
 	int _Time = HitObject->getTime() + LoadTime;
-	int StartTime = _Time - OffsetTime;
+	int StartTime = _Time - 10; // Adjust a bit for unreal delay
 	int EndTime = _Time + OffsetTime;
 
 	beatComponent->Initialize(StartTime, EndTime, Loc.getX(), Loc.getY(), _Time);
