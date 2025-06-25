@@ -85,16 +85,55 @@ void ALevelGameMode::BeginPlay()
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Loaded %d HitObjects"), loadedHitObjectsCount);
+
+	beatmap::HitObject* LastHitObject = HitObjects.back();
+	lastHitObjectEndTime = LastHitObject->getEndTime() + 1000;
+
+	FTimerHandle EndGameTimerHandle;
+
+	// Convert milliseconds to seconds if needed
+	float DelayInSeconds = lastHitObjectEndTime / 1000.0f;
+
+	GetWorld()->GetTimerManager().SetTimer(
+		EndGameTimerHandle,
+		this,
+		&ALevelGameMode::OnCustomEndPlay, 
+		DelayInSeconds,
+		false
+	);
 }
 
-void ALevelGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+void ALevelGameMode::OnCustomEndPlay() {
 	if (BeatMap) {
 		// Log final judgement first
+		int* AllJudgements = BeatMap->getAllJudgements();
+
+		int NumMiss = AllJudgements[0];
+		int NumBad = AllJudgements[1];
+		int NumGood = AllJudgements[2];
+		int NumGreat = AllJudgements[3];
+		int NumPerfect = AllJudgements[4];
+
+		UE_LOG(LogTemp, Warning, TEXT("Final Judgements: Miss: %d, Bad: %d, Good: %d, Great: %d, Perfect: %d"), NumMiss, NumBad, NumGood, NumGreat, NumPerfect);
 
 		delete BeatMap;
 		BeatMap = nullptr;
+
+		OptionsString =
+			TEXT("NumMiss=") + FString::FromInt(NumMiss) +
+			TEXT("NumBad=") + FString::FromInt(NumBad) +
+			TEXT("NumGood=") + FString::FromInt(NumGood) +
+			TEXT("NumGreat=") + FString::FromInt(NumGreat) +
+			TEXT("NumPerfect=") + FString::FromInt(NumPerfect);
+
+		UGameplayStatics::OpenLevel(GetWorld(), FName("Lvl_Complete"), true, OptionsString);
 	}
-	Super::EndPlay(EndPlayReason);
+
+	EndPlay(EEndPlayReason::LevelTransition);
+}
+
+void ALevelGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+		Super::EndPlay(EndPlayReason);
 }
 
 void ALevelGameMode::RenderHitCircle(beatmap::HitObject* HitCircleObject) {
