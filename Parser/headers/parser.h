@@ -87,7 +87,7 @@ namespace beatmap{
                 return std::regex_replace(this->metadataSection.getTitle(), std::regex("[ ()]"), "_");
             }
 
-            beatmap::HitObject::Judgement getJudgement(int time, beatmap::HitObject* hitObject, bool followed = false);
+            beatmap::HitObject::Judgement getJudgement(int _time, beatmap::HitObject* hitObject, bool followed = false);
     };
 
     Beatmap parseBeatmap(std::string path);

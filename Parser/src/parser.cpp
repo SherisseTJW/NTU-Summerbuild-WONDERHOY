@@ -194,12 +194,12 @@ void beatmap::DifficultySection::loadAttributes(std::map<std::string, std::strin
     }
 }
 
-beatmap::HitObject::Judgement beatmap::Beatmap::getJudgement(int time, beatmap::HitObject* hitObject, bool followed){
+beatmap::HitObject::Judgement beatmap::Beatmap::getJudgement(int _time, beatmap::HitObject* hitObject, bool followed){
     beatmap::HitObject::Judgement judgement;
     if(hitObject->getType() == beatmap::HitObject::SLIDER){
-        judgement = hitObject->setJudgement(time, followed);
+        judgement = hitObject->setJudgement(_time, followed);
     }
-    judgement = hitObject->setJudgement(time);
+    judgement = hitObject->setJudgement(_time);
     judgements[judgement]++;
     switch(judgement){
         case beatmap::HitObject::PERFECT:
