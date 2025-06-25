@@ -13,6 +13,7 @@
 #include "Components/SplineMeshComponent.h"
 #include "HitObject.generated.h"
 
+
 UCLASS()
 class WONDERHOY_API AHitObject : public AActor
 {
@@ -37,6 +38,7 @@ public:
 	virtual void OnMouseOverEnd(UPrimitiveComponent* TouchedComp);
 
 	void Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc, beatmap::Beatmap* BeatmapArg);
+
 
 public:
 	UPROPERTY(EditAnywhere)

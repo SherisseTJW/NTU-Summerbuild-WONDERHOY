@@ -42,6 +42,7 @@ AHitObject::AHitObject()
 
 	int32 RandomCharIndex = FMath::RandRange(0, CharacterClasses.Num() - 1);
     CharacterVisual->SetChildActorClass(CharacterClasses[RandomCharIndex]);
+	CharacterVisual->AddWorldTransform(FTransform(FVector(FMath::FRandRange(-0.0f, 10.0f), 0.0f, 0.0f)));
 
 	Mesh->SetGenerateOverlapEvents(true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -53,6 +54,8 @@ AHitObject::AHitObject()
 	Mesh->SetEnableGravity(false);
 	Mesh->SetMobility(EComponentMobility::Movable);
 	Mesh->bReturnMaterialOnMove = true;
+	Mesh->SetWorldScale3D(FVector(2, 2, 2));
+	Mesh->SetVisibility(false);
 
 	Mesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	Mesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);

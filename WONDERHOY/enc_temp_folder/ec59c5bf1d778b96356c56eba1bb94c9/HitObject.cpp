@@ -42,6 +42,7 @@ AHitObject::AHitObject()
 
 	int32 RandomCharIndex = FMath::RandRange(0, CharacterClasses.Num() - 1);
     CharacterVisual->SetChildActorClass(CharacterClasses[RandomCharIndex]);
+	CharacterVisual->AddWorldTransform(FTransform(FVector(0.0f, 0.0f, FMath::FRandRange(-10.0f, 10.0f))));
 
 	Mesh->SetGenerateOverlapEvents(true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -53,6 +54,8 @@ AHitObject::AHitObject()
 	Mesh->SetEnableGravity(false);
 	Mesh->SetMobility(EComponentMobility::Movable);
 	Mesh->bReturnMaterialOnMove = true;
+	Mesh->SetWorldScale3D(FVector(2, 2, 2));
+	Mesh->SetVisibility(false);
 
 	Mesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	Mesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
@@ -160,7 +163,13 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc
 	HitObject = HitObjectArg;
 	HitObjectType = HitObjectArg->getType();
 
-	switch (HitObjectType) {
+	UStaticMesh* LoadedMesh;
+	LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
+	if (LoadedMesh) {
+		Mesh->SetStaticMesh(LoadedMesh);
+	}
+
+	/*switch (HitObjectType) {
 		case beatmap::HitObject::ObjectType::HIT_CIRCLE:
 			UE_LOG(LogTemp, Warning, TEXT("HitObject Type: HIT_CIRCLE"));
 			break;
@@ -173,10 +182,6 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc
 		default:
 			UE_LOG(LogTemp, Warning, TEXT("HitObject Type: DEFAULT"));
 			break;
-	}
-
-	/*if (LoadedMesh) {
-		Mesh->SetStaticMesh(LoadedMesh);
 	}*/
 
 	int _Time = HitObject->getTime();
