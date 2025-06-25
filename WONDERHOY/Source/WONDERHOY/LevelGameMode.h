@@ -28,8 +28,13 @@ public:
 	void RenderSlider(beatmap::HitObject* SliderHitObject);
 	void RenderSpinner(beatmap::HitObject* SpinnerHitObject);
 
+	UFUNCTION()
+	void OnCustomEndPlay();
+
 public:
 	beatmap::Beatmap* BeatMap;
 
 	int loadedHitObjectsCount = 0;
+
+	float lastHitObjectEndTime = 0.0f;
 };

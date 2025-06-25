@@ -43,27 +43,47 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	float CurrentRunTime = UGameplayStatics::GetRealTimeSeconds(GetWorld());
 
-	bool bPastPeriod = CurrentRunTime > this->EndTime;
+	float StartTimeInS = this->StartTime / 1000;
+	float EndTimeInS = this->EndTime / 1000;
+	float BaseTimeInS = this->BaseTime / 1000;
 
+	bool bPastPeriod = CurrentRunTime > EndTimeInS;
+
+	// WHY NO TRIGGER BRO
 	if (bPastPeriod) {
 		Owner->Destroy();
 		return;
 	}
 
-	float StartTimeInS = this->StartTime / 1000;
-	float EndTimeInS = this->EndTime / 1000;
-	float BaseTimeInS = this->BaseTime / 1000;
-
-	bool bVisible = !(CurrentRunTime >= StartTimeInS && CurrentRunTime <= EndTimeInS);
-	Owner->SetActorHiddenInGame(bVisible);
-	Owner->SetActorEnableCollision(!bVisible);
-
-	UStaticMeshComponent* MeshComp = Owner->FindComponentByClass<UStaticMeshComponent>();
-	if (MeshComp) {
-		MeshComp->SetCollisionEnabled(!bVisible ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
+	// If already spawned, no need to handle any further logic until time to destroy
+	if (Spawned) {
+		return;
 	}
 
-	FLinearColor IndicatorColor;
+	bool bShouldBeVisible = CurrentRunTime >= StartTimeInS && CurrentRunTime <= EndTimeInS;
+	if (bShouldBeVisible) {
+		Owner->SetActorHiddenInGame(false);
+		Owner->SetActorEnableCollision(true);
+
+		UStaticMeshComponent* MeshComp = Owner->FindComponentByClass<UStaticMeshComponent>();
+		if (MeshComp) {
+			MeshComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		}
+
+		Spawned = true;
+	}
+	else {
+		Owner->SetActorHiddenInGame(true);
+		Owner->SetActorEnableCollision(false);
+
+		UStaticMeshComponent* MeshComp = Owner->FindComponentByClass<UStaticMeshComponent>();
+		if (MeshComp) {
+			MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+	}
+
+	// NOTE: Interaction mode is now Hover so we will only make it appear slightly before the perfect time, no need to change color
+	/*FLinearColor IndicatorColor;
 	if (CurrentRunTime >= StartTimeInS) {
 		if (CurrentRunTime <= BaseTimeInS) {
 			IndicatorColor = FLinearColor(1.0f, 0.5f, 0.0f);
@@ -76,7 +96,7 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	UMaterialInstanceDynamic* DynMaterial = Cast<UMaterialInstanceDynamic>(MeshComp->GetMaterial(0));
 	if (DynMaterial) {
 		DynMaterial->SetVectorParameterValue("Color", IndicatorColor);
-	}
+	}*/
 }
 
 void UBeatComponent::Initialize(int StartTimeArg, int EndTimeArg, float CoordXArg, float CoordYArg, int TimeArg) {

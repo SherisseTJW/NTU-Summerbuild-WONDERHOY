@@ -36,4 +36,6 @@ private:
 
 	float CoordX;
 	float CoordY;
+
+	bool Spawned;
 };
