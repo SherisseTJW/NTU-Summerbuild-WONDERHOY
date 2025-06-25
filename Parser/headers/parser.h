@@ -66,6 +66,11 @@ namespace beatmap{
                 return this->maxCombo;
             }
 
+            int getCurrCombo(){
+                return this->currCombo;
+            }
+
+            // MISS,BAD,GOOD,GREAT,PERFECT
             int* getAllJudgements(){
                 return this->judgements;
             }

@@ -80,16 +80,16 @@ beatmap::Spinning::Spinning(int _x, int _y, int _time, int _hitSound, int _endTi
 
 beatmap::HitObject::Judgement beatmap::HitObject::setJudgement(int time){
     int diff = abs(time - this->time);
-    if(diff < 42){
+    if(diff < 60){
         return beatmap::HitObject::PERFECT;
     }
-    else if(42 <= diff && diff < 83){
+    else if(60 <= diff && diff < 90){
         return beatmap::HitObject::GREAT;
     }
-    else if(83 <= diff && diff < 108){
+    else if(90 <= diff && diff < 125){
         return beatmap::HitObject::GOOD;
     }
-    else if(108 <= diff && diff < 125){
+    else if(125 <= diff && diff < 150){
         return beatmap::HitObject::BAD;
     }
     return beatmap::HitObject::MISS;
