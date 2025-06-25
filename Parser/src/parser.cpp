@@ -205,7 +205,7 @@ beatmap::HitObject::Judgement beatmap::Beatmap::getJudgement(int _time, beatmap:
         case beatmap::HitObject::PERFECT:
         case beatmap::HitObject::GREAT:
         case beatmap::HitObject::GOOD:
-        case beatmap::HitObject::BAD
+        case beatmap::HitObject::BAD:
             currCombo += 1;
             if(maxCombo < currCombo){
                 maxCombo = currCombo;
