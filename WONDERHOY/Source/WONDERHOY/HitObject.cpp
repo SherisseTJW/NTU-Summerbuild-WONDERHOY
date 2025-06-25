@@ -29,7 +29,7 @@ AHitObject::AHitObject()
 	CharacterVisual = CreateDefaultSubobject<UChildActorComponent>(TEXT("CharacterVisual"));
 	CharacterVisual->SetupAttachment(RootComponent);
 
-	static ConstructorHelpers::FClassFinder<AActor> CharacterBP(TEXT("/Game/Assets/Characters/BP_CharacterBase"));
+	static ConstructorHelpers::FClassFinder<AActor> CharacterBP(TEXT("/Game/Assets/Characters/BP_Character_Emu"));
 	if (CharacterBP.Succeeded()) {
 		CharacterVisual->SetChildActorClass(CharacterBP.Class);
 	}
