@@ -160,13 +160,7 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc
 	HitObject = HitObjectArg;
 	HitObjectType = HitObjectArg->getType();
 
-	UStaticMesh* LoadedMesh;
-	LoadedMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
-	if (LoadedMesh) {
-		Mesh->SetStaticMesh(LoadedMesh);
-	}
-
-	/*switch (HitObjectType) {
+	switch (HitObjectType) {
 		case beatmap::HitObject::ObjectType::HIT_CIRCLE:
 			UE_LOG(LogTemp, Warning, TEXT("HitObject Type: HIT_CIRCLE"));
 			break;
@@ -179,6 +173,10 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc
 		default:
 			UE_LOG(LogTemp, Warning, TEXT("HitObject Type: DEFAULT"));
 			break;
+	}
+
+	/*if (LoadedMesh) {
+		Mesh->SetStaticMesh(LoadedMesh);
 	}*/
 
 	int _Time = HitObject->getTime();
