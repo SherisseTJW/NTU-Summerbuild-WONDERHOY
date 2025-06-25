@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/WidgetComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "BeatComponent.h"
 #include "Parser/headers/hit-object.h"
 #include "Parser/headers/parser.h"
@@ -46,12 +48,15 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components");
 	USplineMeshComponent* splineMeshComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	UWidgetComponent* JudgementWidgetComponent;
+
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Mesh;
 
 	// In ms
 	int OffsetTime = 1000;
-	int LoadTime = 500;
+	int LeadTime = 800;
 
 	float StartMouseOverTime = 0.0f;
 

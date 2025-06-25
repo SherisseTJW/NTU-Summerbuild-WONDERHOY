@@ -45,6 +45,7 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	bool bPastPeriod = CurrentRunTime > this->EndTime;
 
+	// WHY NO TRIGGER BRO
 	if (bPastPeriod) {
 		Owner->Destroy();
 		return;

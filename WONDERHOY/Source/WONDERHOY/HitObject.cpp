@@ -6,6 +6,10 @@
 #include "Parser/headers/hit-object.h"
 #include "Parser/headers/parser.h"
 
+#include "Components/WidgetComponent.h"
+#include "Components/TextBlock.h"
+#include "Blueprint/UserWidget.h"
+
 #include "Kismet/KismetMathLibrary.h"
 #include "Math/UnrealMathUtility.h"
 #include "Components/SplineComponent.h"
@@ -49,6 +53,13 @@ AHitObject::AHitObject()
 	Mesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	Mesh->SetCanEverAffectNavigation(false);
 
+	JudgementWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("JudgementWidget"));
+	JudgementWidgetComponent->SetupAttachment(RootComponent);
+	JudgementWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
+	JudgementWidgetComponent->SetDrawSize(FVector2D(200.f, 100.f));
+	JudgementWidgetComponent->SetRelativeLocation(FVector(0.f, 0.f, 100.f)); // Slightly above the actor
+	JudgementWidgetComponent->SetVisibility(false); // Start hidden
+
 	beatComponent = CreateDefaultSubobject<UBeatComponent>(TEXT("beatComponent"));
 	if (!beatComponent) {
 		UE_LOG(LogTemp, Warning, TEXT("BeatComponent not created successfully"));
@@ -72,6 +83,11 @@ void AHitObject::BeginPlay() {
 
 	Mesh->OnBeginCursorOver.AddDynamic(this, &AHitObject::OnMouseOverStart);
 	Mesh->OnEndCursorOver.AddDynamic(this, &AHitObject::OnMouseOverEnd);
+
+	UClass* LoadedWidgetClass = LoadClass<UUserWidget>(nullptr, TEXT("/Game/UI/W_JudgementText.W_JudgementText_C"));
+	if (LoadedWidgetClass) {
+		JudgementWidgetComponent->SetWidgetClass(LoadedWidgetClass);
+	}
 }
 
 // Called every frame
@@ -81,13 +97,13 @@ void AHitObject::Tick(float DeltaTime) {
 
 void AHitObject::OnMouseOverStart(UPrimitiveComponent* TouchedComp) {
 	if (TouchedComp == Mesh) {
-		StartMouseOverTime = UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000; // Convert to milliseconds
+		StartMouseOverTime = (UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000) - LeadTime; // Convert to milliseconds
 	}
 }
 
 void AHitObject::OnMouseOverEnd(UPrimitiveComponent* TouchedComp) {
 	if (TouchedComp == Mesh) {
-		float CurrentRunTime = (UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000) - LoadTime;
+		float CurrentRunTime = (UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000) - LeadTime;
 		float RegisterTime = (CurrentRunTime + StartMouseOverTime) / 2;
 
 		float ExpectedTime = HitObject->getTime();
@@ -121,8 +137,20 @@ void AHitObject::OnMouseOverEnd(UPrimitiveComponent* TouchedComp) {
 		FString Output = FString::Printf(TEXT("Judgement: %s"), *JudgementResultStr);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Output);
 
+		/*
+		if (UUserWidget* Widget = JudgementWidgetComponent->GetUserWidgetObject()) {
+			UE_LOG(LogTemp, Warning, TEXT("Judgement Widget found, NOT SET"));
+			if (UTextBlock* TextBlock = Cast<UTextBlock>(Widget->GetWidgetFromName(TEXT("JudgementText")))) {
+				UE_LOG(LogTemp, Warning, TEXT("Judgement Text Block found and set."));
+				TextBlock->SetText(FText::FromString(JudgementResultStr));
+			}
+
+			JudgementWidgetComponent->SetVisibility(true);
+		}*/
+
 		// Once hovered, destroy the HitObject so its not clickable again or visible
 		this->Destroy();
+		//this->SetHidden(true);
 	}
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Mouse is not over the HitObject Mesh."));
@@ -168,7 +196,7 @@ void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc
 		Mesh->SetStaticMesh(LoadedMesh);
 	}
 
-	int _Time = HitObject->getTime() + LoadTime;
+	int _Time = HitObject->getTime();
 	int StartTime = _Time - 10; // Adjust a bit for unreal delay
 	int EndTime = _Time + OffsetTime;
 

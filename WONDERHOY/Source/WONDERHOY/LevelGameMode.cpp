@@ -87,9 +87,10 @@ void ALevelGameMode::BeginPlay()
 	UE_LOG(LogTemp, Warning, TEXT("Loaded %d HitObjects"), loadedHitObjectsCount);
 }
 
-void ALevelGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
+void ALevelGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 	if (BeatMap) {
+		// Log final judgement first
+
 		delete BeatMap;
 		BeatMap = nullptr;
 	}
