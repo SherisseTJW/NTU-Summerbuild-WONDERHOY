@@ -134,9 +134,9 @@ namespace beatmap{
                 throw beatmap::NotImplementedException("Not Implemented!");
             }
 
-            beatmap::HitObject::Judgement setJudgement(int time);
+            beatmap::HitObject::Judgement setJudgement(int _time);
 
-            beatmap::HitObject::Judgement setJudgement(int time, bool followed);
+            beatmap::HitObject::Judgement setJudgement(int _time, bool followed);
 
         private:
             int x;
