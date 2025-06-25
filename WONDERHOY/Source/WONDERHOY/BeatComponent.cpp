@@ -43,7 +43,11 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	float CurrentRunTime = UGameplayStatics::GetRealTimeSeconds(GetWorld());
 
-	bool bPastPeriod = CurrentRunTime > this->EndTime;
+	float StartTimeInS = this->StartTime / 1000;
+	float EndTimeInS = this->EndTime / 1000;
+	float BaseTimeInS = this->BaseTime / 1000;
+
+	bool bPastPeriod = CurrentRunTime > EndTimeInS;
 
 	// WHY NO TRIGGER BRO
 	if (bPastPeriod) {
@@ -56,10 +60,6 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		return;
 	}
 
-	float StartTimeInS = this->StartTime / 1000;
-	float EndTimeInS = this->EndTime / 1000;
-	float BaseTimeInS = this->BaseTime / 1000;
-
 	bool bShouldBeVisible = CurrentRunTime >= StartTimeInS && CurrentRunTime <= EndTimeInS;
 	if (bShouldBeVisible) {
 		Owner->SetActorHiddenInGame(false);
@@ -70,7 +70,6 @@ void UBeatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			MeshComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("Set Spawned"));
 		Spawned = true;
 	}
 	else {
