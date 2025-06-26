@@ -103,9 +103,9 @@ void AHitObject::OnMouseOverStart(UPrimitiveComponent* TouchedComp) {
 		float CurrentRunTime = (UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000) - LeadTime;
 		float RegisterTime = (CurrentRunTime + StartMouseOverTime) / 2;
 
-		float ExpectedTime = HitObject->getTime();
+		float ExpectedTime = HitObject->getTime();/*
 		FString TimeString = FString::Printf(TEXT("Registered: %.2f seconds, expected time: %.2f seconds"), RegisterTime, ExpectedTime);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TimeString);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TimeString);*/
 
 		beatmap::HitObject::Judgement JudgementResult = Beatmap->getJudgement(CurrentRunTime, HitObject);
 
@@ -136,9 +136,6 @@ void AHitObject::OnMouseOverStart(UPrimitiveComponent* TouchedComp) {
 
 		// Once hovered, destroy the HitObject so its not clickable again or visible
 		this->Destroy();
-	}
-	else {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Mouse is not over the HitObject Mesh."));
 	}
 	//if (TouchedComp == Mesh) {
 	//	StartMouseOverTime = (UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000) - LeadTime; // Convert to milliseconds
