@@ -13,7 +13,6 @@ Key gameplay features include:
 - 🎵 **Beat-matched mole spawning** for rhythmic play  
 - 🕹️ **Combo streaks & scoring system** to encourage skill  
 - 🎭 **Animated characters** reacting to whacks — from Emu's cheer to Fishkasa’s pout  
-- ⚡ **Dynamic difficulty** that scales with performance  
 
 ---
 
