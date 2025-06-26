@@ -100,12 +100,6 @@ void AHitObject::Tick(float DeltaTime) {
 
 void AHitObject::OnMouseOverStart(UPrimitiveComponent* TouchedComp) {
 	if (TouchedComp == Mesh) {
-		StartMouseOverTime = (UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000) - LeadTime; // Convert to milliseconds
-	}
-}
-
-void AHitObject::OnMouseOverEnd(UPrimitiveComponent* TouchedComp) {
-	if (TouchedComp == Mesh) {
 		float CurrentRunTime = (UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000) - LeadTime;
 		float RegisterTime = (CurrentRunTime + StartMouseOverTime) / 2;
 
@@ -146,6 +140,13 @@ void AHitObject::OnMouseOverEnd(UPrimitiveComponent* TouchedComp) {
 	else {
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Mouse is not over the HitObject Mesh."));
 	}
+	//if (TouchedComp == Mesh) {
+	//	StartMouseOverTime = (UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000) - LeadTime; // Convert to milliseconds
+	//}
+}
+
+void AHitObject::OnMouseOverEnd(UPrimitiveComponent* TouchedComp) {
+	
 }
 
 void AHitObject::Initialize(beatmap::HitObject* HitObjectArg, beatmap::Coord Loc, beatmap::Beatmap* BeatmapArg) {
