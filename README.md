@@ -29,8 +29,8 @@ To bring WONDERHOY!!! to life, we leveraged the following technologies:
 
 ## 💡 Technical Highlights
 
-- Implemented beat synchronization using Unreal’s `Tick` system + Timeline Nodes for precision timing  
-- Created custom Blueprint logic to spawn hit targets and register player inputs with time windows  
+- Implemented beat synchronization using Unreal’s `Tick` system for precision timing  
+- Created custom C++ to spawn hit targets and register player inputs with time windows  
 - Used Unreal’s animation system to rig and trigger character expressions based on player actions  
 - Developed our own rhythm chart parser to make level design customizable and scalable
 
