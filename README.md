@@ -42,4 +42,4 @@ To bring WONDERHOY!!! to life, we leveraged the following technologies:
 
 We hope you enjoy whacking to the beat as much as we enjoyed creating it —  
 and remember:  
-**WONDERHOY~!!!** 💖🥁🎪
+![https://tenor.com/view/원더호이-wonderhoy-wondahoy-hooray-tada-gif-27102628](https://media1.tenor.com/m/Rwe9eyMNYVsAAAAd/%EC%9B%90%EB%8D%94%ED%98%B8%EC%9D%B4-wonderhoy.gif)
